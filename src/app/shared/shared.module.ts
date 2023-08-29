@@ -1,17 +1,58 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { UIModule } from './ui/ui.module';
-
-import { WidgetModule } from './widget/widget.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { CommonDeleteModalComponent } from './common-delete-modal/common-delete-modal.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule,
-    UIModule,
-    WidgetModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatInputModule,
+        MatIconModule,
+        MatTooltipModule,
+        MatButtonModule,
+        MatSnackBarModule,
+        MatSortModule,
+        MatFormFieldModule,
+        MatDialogModule,
+        MatProgressBarModule,
+        MatSlideToggleModule,
+        MatSelectModule
+    ],
+    exports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatInputModule,
+        MatIconModule,
+        MatTooltipModule,
+        MatButtonModule,
+        MatSnackBarModule,
+        MatSortModule,
+        MatFormFieldModule,
+        MatDialogModule,
+        MatProgressBarModule,
+        MatSlideToggleModule,
+        MatSelectModule
+    ],
+    declarations: [CommonDeleteModalComponent],
 })
-
-export class SharedModule { }
+export class SharedModule {}

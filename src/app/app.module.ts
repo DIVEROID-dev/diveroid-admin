@@ -1,77 +1,53 @@
-import { BrowserModule } from "@angular/platform-browser";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { NgModule } from "@angular/core";
-import {
-  HttpClientModule,
-  HTTP_INTERCEPTORS,
-  HttpClient,
-} from "@angular/common/http";
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ExtraOptions, PreloadAllModules, RouterModule } from '@angular/router';
+import { MarkdownModule } from 'ngx-markdown';
+import { FuseModule } from '@fuse';
+import { FuseConfigModule } from '@fuse/services/config';
+import { FuseMockApiModule } from '@fuse/lib/mock-api';
+import { CoreModule } from 'app/core/core.module';
+import { appConfig } from 'app/core/config/app.config';
+import { mockApiServices } from 'app/mock-api';
+import { LayoutModule } from 'app/layout/layout.module';
+import { AppComponent } from 'app/app.component';
+import { appRoutes } from 'app/app.routing';
+import { MasterModule } from './modules/admin/master/master.module';
+import { FuseSplashScreenModule } from '@fuse/services/splash-screen';
 
-
-import {
-  NgbNavModule,
-  NgbAccordionModule,
-  NgbTooltipModule,
-  NgbModule,
-} from "@ng-bootstrap/ng-bootstrap";
-import { CarouselModule } from "ngx-owl-carousel-o";
-import { ScrollToModule } from "@nicky-lenaers/ngx-scroll-to";
-
-
-import { ExtrapagesModule } from "./extrapages/extrapages.module";
-
-import { LayoutsModule } from "./layouts/layouts.module";
-import { AppRoutingModule } from "./app-routing.module";
-import { AppComponent } from "./app.component";
-import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
-import { TranslateHttpLoader } from "@ngx-translate/http-loader";
-
-import { ErrorInterceptor } from "./core/helpers/error.interceptor";
-import { JwtInterceptor } from "./core/helpers/jwt.interceptor";
-import { ApiInterceptor } from "./core/helpers/api.interceptor";
-import { UIModule } from "./shared/ui/ui.module";
-
-
-
-export function createTranslateLoader(http: HttpClient): any {
-  return new TranslateHttpLoader(http, "assets/i18n/", ".json");
-}
+const routerConfig: ExtraOptions = {
+    preloadingStrategy       : PreloadAllModules,
+    scrollPositionRestoration: 'enabled'
+};
 
 @NgModule({
-    declarations: [AppComponent],
-    bootstrap: [AppComponent],
-    providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: ApiInterceptor,
-            multi: true,
-        },
-        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        // LoaderService,
-        // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptorService, multi: true },
+    declarations: [
+        AppComponent
     ],
-    imports: [
+    imports     : [
         BrowserModule,
         BrowserAnimationsModule,
-        HttpClientModule,
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: createTranslateLoader,
-                deps: [HttpClient],
-            },
-        }),
-        LayoutsModule,
-        AppRoutingModule,
-        ExtrapagesModule,
-        CarouselModule,
-        NgbAccordionModule,
-        NgbNavModule,
-        NgbTooltipModule,
-        ScrollToModule.forRoot(),
-        NgbModule,
-        UIModule
-    ]
+        RouterModule.forRoot(appRoutes, routerConfig),
+
+        // Fuse, FuseConfig & FuseMockAPI
+        FuseModule,
+        FuseConfigModule.forRoot(appConfig),
+        FuseMockApiModule.forRoot(mockApiServices),
+
+        // Core module of your application
+        CoreModule,
+
+        // Layout module of your application
+        LayoutModule,
+
+        // 3rd party modules that require global configuration via forRoot
+        MarkdownModule.forRoot({}),
+        MasterModule,
+    ],
+    bootstrap   : [
+        AppComponent
+    ],
 })
-export class AppModule {}
+export class AppModule
+{
+}

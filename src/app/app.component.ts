@@ -1,13 +1,19 @@
-import { Component , OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LoaderService } from './shared/service/loader.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
-})
-export class AppComponent implements OnInit  {
+    selector   : 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls  : ['./app.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 
-  ngOnInit() {
-    // document.getElementsByTagName("html")[0].setAttribute("dir", "rtl");
-  }
+})
+export class AppComponent
+{
+    /**
+     * Constructor
+     */
+    constructor(public loaderService: LoaderService)
+    {
+    }
 }

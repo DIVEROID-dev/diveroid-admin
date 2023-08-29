@@ -3,13 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  hosts: [
-    { prefix: '/api', target: 'http://192.168.1.81:4000/v3/' },
-  ],
+    production: false,
+    hosts: [
+        { prefix: '/api', target: 'https://stagingapi.diveroid.com/v3/' },
+    ],
 };
-
-
 
 /*
  * For easier debugging in development mode, you can import the following file
