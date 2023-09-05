@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center
         sm:justify-between">
         <div class="flex flex-row mb-2 justify-between w-full">
-            <div class="text-4xl pl-5 font-semibold">Status</div>
+            <div class="text-4xl pl-5 font-semibold">Black Listed Tokens</div>
         </div>
     </div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center
@@ -18,12 +18,7 @@
                     (input)="onSerach($event)">
             </mat-form-field>
         </div>
-        <div class="mt-4 sm:mt-0">
-            <button mat-flat-button color="primary" (click)="openDialog(statusModal,false)" matTooltip="Add Status">
-                <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
-                <span class="ml-2 mr-1">Add Status</span>
-            </button>
-        </div>
+
     </div>
 
     <div class="w-full p-3 mt-4 bg-card rounded-2xl shadow overflow-x-auto">
@@ -40,13 +35,40 @@
 
             <ng-container matColumnDef="Name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    <span> Name </span>
+                    <span> Member Name </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
                     <span>
-                        {{element.Name
+                        {{element.member?.Name
                         }}
                     </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="GuestMemberId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <span> Guest Member Name</span>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element.GuestMemberId}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Token">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <span> Token </span>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="flex items-center justify-start">
+                        <div [matTooltip]="element.Token">
+                                {{element.Token ?.length > 45 ? (element.Token| slice:0:45) + '...' :
+                                element.Token }}
+                        </div>
+                        <button type="button">
+                            <mat-icon matTooltip="Copy" *ngIf="element.Token" class="text-primary"
+                                svgIcon="mat_outline:content_copy" (click)="copyToken(element.Token)"></mat-icon>
+                        </button>
+                    </div>
                 </td>
             </ng-container>
 
@@ -57,10 +79,7 @@
                 </th>
                 <td mat-cell *matCellDef="let element">
                     <div class="flex flex-row py-2 justify-center gap-2">
-                        <div class="" (click)="openDialog(statusModal,true,element)">
-                            <mat-icon class="icon-size-7 text-green-500
-                                cursor-pointer" matTooltip="Update" [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
-                        </div>
+
                         <div class="" (click)="deleteRecord(element.id)">
                             <mat-icon class="icon-size-7 text-red-500
                                 cursor-pointer" matTooltip="Delete" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
@@ -86,42 +105,3 @@
         </mat-paginator>
     </div>
 </div>
-<!-- Add or update  Dilog Box -->
-<ng-template let-data #statusModal>
-    <div class="form-container">
-        <h1 class="mat-dialog-title text-center">{{!isEdit?'Add':'Update'}} Status</h1>
-        <div class="mat-dialog-content">
-            <!-- Form Group -->
-            <form [formGroup]="statusForm" (ngSubmit)="saveForm()">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <mat-form-field appearance="outline" class="example-full-width">
-                                <!-- name  field  -->
-                                <mat-label> Status Name <span class="required-field"> *</span></mat-label>
-                                <input type="text" matInput formControlName="Name" placeholder="Enter Status Name"
-                                    [maxlength]="50">
-                                <mat-error *ngIf="statusForm.controls['Name'].hasError('required')">
-                                    Please enter status name
-                                </mat-error>
-                                <mat-error *ngIf="statusForm.controls['Name'].hasError('pattern')">
-                                    Please enter valid status name
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="justify-end md:flex gap-2">
-                    <button mat-flat-button color="primary"> Submit
-                    </button>
-                    <button mat-stroked-button color="primary" matDialogClose> Cancel
-                    </button>
-                </div>
-            </form>
-
-
-        </div>
-
-    </div>
-</ng-template>

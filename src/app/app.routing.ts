@@ -108,6 +108,13 @@ export const appRoutes: Route[] = [
                         (m) => m.MasterModule
                     ),
             },
+            {
+                path: 'members',
+                loadChildren: () =>
+                    import('./modules/admin/members/members.module').then(
+                        (m) => m.MembersModule
+                    ),
+            },
             // 404 & Catch all
             {
                 path: '404-not-found',

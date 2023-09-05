@@ -58,30 +58,6 @@ export const Apiurl = {
     //black listed tokens api
     blackListedTokenList: 'admin/member/blacklistToken/',
 
-    /**
-     * device module
-     */
-    //device category list
-    deviceCategoryList: 'admin/deviceCategory/',
-
-    //devices master api
-    deviceMasteList: 'admin/deviceMaster/',
-
-    //member devices list
-    memberDevicesList: 'admin/memberDevice/',
-
-    /**
-     * my info module
-     */
-
-    //organization api
-    organizationList: 'admin/organization/',
-
-    //diving level api
-    divingLevelList: 'admin/divingLevel/',
-
-    //avatars api
-    avatarList:'admin/avatar/',
 
     /**
      * static api

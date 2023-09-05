@@ -79,7 +79,7 @@
                             <mat-icon class="icon-size-7 text-green-500
                                 cursor-pointer" matTooltip="Update" [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
                         </div>
-                        <div class="" (click)="deleteLanguage(element.id)">
+                        <div class="" (click)="deleteRecord(element.id)">
                             <mat-icon class="icon-size-7 text-red-500
                                 cursor-pointer" matTooltip="Delete" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
                         </div>
@@ -115,7 +115,8 @@
                 <mat-form-field appearance="outline" class="example-full-width">
                     <!-- Nation  field  -->
                     <mat-label>Nation Name<span class="required-field"> *</span></mat-label>
-                    <input type="text" matInput formControlName="Nation" placeholder="Enter Nation Name" [maxlength]="50">
+                    <input type="text" matInput formControlName="Nation" placeholder="Enter Nation Name"
+                        [maxlength]="50">
                     <mat-error *ngIf=" Nationform.controls['Nation'].hasError('required')">
                         Please enter nation name
                     </mat-error>
@@ -136,20 +137,12 @@
                     </mat-error>
                 </mat-form-field>
 
-                <!-- <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
-
-                <div class="file-upload">
-                    <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">
-                        <mat-icon svgIcon="mat_outline:file_upload"></mat-icon>
-                    </button>
-                    {{fileName || "No file selected yet."}}
-
-                </div> -->
                 <mat-label>Upload Image<span class="required-field"> *</span></mat-label>
                 <div class="row flex flex-auto items-end mt-5 justify-left">
                     <div
-                        class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card">
-                        <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+                        class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container ">
+                        <div class="absolute inset-0  z-10">
+                        </div>
                         <div class="absolute inset-0 flex items-center justify-center z-20">
                             <div>
                                 <input type="file" class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
@@ -158,17 +151,24 @@
                                 <label
                                     class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
                                     for="avatar-file-input" matRipple>
-                                    <mat-icon class="text-white" [svgIcon]="'mat_outline:file_upload'"></mat-icon>
+                                    <mat-icon class="text-white upload-icon"
+                                        [svgIcon]="'mat_outline:file_upload'"></mat-icon>
                                 </label>
                             </div>
                         </div>
                         <img class="object-cover w-full h-full"
-                            [src]="imageFile === undefined || imageFile==='' ? ''  : imageFile">
+                            [src]="imageFile">
                     </div>
                 </div>
+              
+                
+                
+
+
+
 
                 <div class="justify-end md:flex gap-2 mt-6">
-                    <button mat-flat-button color="primary" (click)="saveLanguageForm()"> Submit
+                    <button mat-flat-button color="primary" (click)="saveForm()"> Submit
                     </button>
                     <button mat-stroked-button color="primary" matDialogClose> Cancel
                     </button>

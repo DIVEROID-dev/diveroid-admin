@@ -2,11 +2,11 @@
 import { FuseNavigationItem } from '@fuse/components/navigation';
 
 export const defaultNavigation: FuseNavigationItem[] = [
-       {
+  {
         id: 'master',
         title: 'Master',
         type: 'collapsable',
-        icon: 'heroicons_outline:user-circle',
+        icon: 'mat_outline:manage_accounts',
         link: 'master',
         children: [
             {
@@ -109,5 +109,41 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
-   
+    {
+        id: 'members',
+        title: 'Members',
+        type: 'collapsable',
+        icon: 'heroicons_outline:user-group',
+        link: 'members',
+        children: [
+            {
+                id: 'members/users',
+                title: 'Users',
+                type: 'basic',
+                link: 'members/users',
+                icon: 'mat_outline:account_circle',
+            },
+            {
+                id: 'members/guest',
+                title: 'Guest',
+                type: 'basic',
+                link: 'members/guest',
+                icon: 'feather:users',
+            },
+            {
+                id: 'members/log-in-logs',
+                title: 'Login Logs',
+                type: 'basic',
+                link: 'members/log-in-logs',
+                icon: 'feather:log-in',
+            },
+            {
+                id: 'members/black-listed-tokens',
+                title: 'Black Listed Tokens',
+                type: 'basic',
+                link: 'members/black-listed-tokens',
+                icon: 'mat_outline:block',
+            },
+        ],
+    },
 ];

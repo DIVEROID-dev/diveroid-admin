@@ -141,8 +141,8 @@ export class NationsComponent implements OnInit {
         this.submitted = false;
         this.dialog.open(templateRef, {
             disableClose: true,
-            width: '35%',
-            height: '50%',
+            width: '36%',
+            height: '54%',
         });
         if (this.isEdit) {
             this.setFormValue(data);
@@ -194,7 +194,7 @@ export class NationsComponent implements OnInit {
      * method for save form
      * @returns if form is not valid
      */
-    saveLanguageForm() {
+    saveForm() {
         this.submitted = true;
         if (!this.Nationform.valid ||
             (!this.isEdit && this.selectedFile == null)) {
@@ -232,7 +232,7 @@ export class NationsComponent implements OnInit {
     /**
      * method for delete selected record
      */
-    deleteLanguage(id: number) {
+    deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
                 title: 'Nations',

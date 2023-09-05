@@ -178,7 +178,7 @@ Public methods
         this.dialog.open(templateRef, {
             disableClose: true,
             width: '40%',
-            height: '45%',
+            height: '50%',
         });
         if (this.isEdit) {
             this.setFormValue(data);

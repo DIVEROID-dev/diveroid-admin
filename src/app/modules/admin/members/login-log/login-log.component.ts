@@ -17,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-water-entry',
-    templateUrl: './water-entry.component.html',
-    styleUrls: ['./water-entry.component.scss'],
+    selector: 'app-login-log',
+    templateUrl: './login-log.component.html',
+    styleUrls: ['./login-log.component.scss'],
 })
-export class WaterEntryComponent implements OnInit {
+export class LoginLogComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,8 +36,8 @@ export class WaterEntryComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    waterEntryForm: FormGroup;
     submitted = false;
+
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -47,15 +47,13 @@ export class WaterEntryComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllEntryList());
+            .subscribe(() => this.getAllLogList());
     }
 
     ngOnInit(): void {
         this.searchText = new FormControl('');
         this.dataInitializer();
-        this.defineForm();
     }
-
     /*---------------------------------
 Private  methods
 -----------------------------------*/
@@ -65,19 +63,20 @@ Private  methods
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllEntryList();
+        this.getAllLogList();
     }
 
     /**
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = ['id', 'Type', 'action'];
+        this.columns = ['id', 'Name', 'MobileType', 'MobileDetails', 'action'];
     }
+
     /***
-     * method for get all listing data 
+     * method for get all listing data
      */
-    getAllEntryList() {
+    getAllLogList() {
         this.loader.showLoader();
         const params = {
             index: this.pageIndex + 1,
@@ -92,11 +91,11 @@ Private  methods
         }
 
         this.baseService
-            .get(Apiurl.waterEntryList, params)
+            .get(Apiurl.logInLogList, params)
             .subscribe((response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.waterEntry;
+                    this.dataSource.data = response.data.loginLog;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -110,26 +109,10 @@ Private  methods
                 }
             });
     }
+
     /*---------------------------------
 Public methods
 -----------------------------------*/
-
-    /**
-     * method for define form
-     */
-    defineForm() {
-        this.waterEntryForm = this.fb.group({
-            Type: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
-        });
-    }
-
-    /**
-     * update time set the form value
-     */
-    setFormValue(data: any) {
-        this.id = data.id;
-        this.waterEntryForm.controls.Type.setValue(data.Type);
-    }
 
     /**
      * input method for search the data
@@ -146,32 +129,14 @@ Public methods
         this.searchText.setValue('');
         this.searchUpdater.next(this.filter.nativeElement.value);
     }
+
     /**
      * Method for sorting data
      */
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllEntryList();
-    }
-
-    /**
-     *
-     *method for open dialog box
-     */
-    openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
-        this.id = null;
-        this.defineForm();
-        this.isEdit = isEdit;
-        this.submitted = false;
-        this.dialog.open(templateRef, {
-            disableClose: true,
-            width: '22%',
-            height: '26%',
-        });
-        if (this.isEdit) {
-            this.setFormValue(data);
-        }
+        this.getAllLogList();
     }
 
     /**
@@ -181,79 +146,24 @@ Public methods
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getAllEntryList();
+        this.getAllLogList();
     }
 
-    /***
-     * method for save form
-     */
-    saveForm() {
-        this.submitted = true;
-        if (!this.waterEntryForm.valid) {
-            return;
-        }
-        if (this.isEdit) {
-            this.baseService
-                .put(Apiurl.waterEntryList + this.id, this.waterEntryForm.value)
-                .subscribe(
-                    (res: any) => {
-                        if (res) {
-                            this.toastService.showToastMessage(
-                                res.message,
-                                'success-style'
-                            );
-                            this.dialog.closeAll();
-                            this.getAllEntryList();
-                        }
-                    },
-                    (error) => {
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
-        } else if (!this.isEdit) {
-            this.baseService
-                .post(Apiurl.waterEntryList, this.waterEntryForm.value)
-                .subscribe(
-                    (res: any) => {
-                        if (res) {
-                            this.toastService.showToastMessage(
-                                res.message,
-                                'success-style'
-                            );
-                            this.dialog.closeAll();
-                            this.getAllEntryList();
-                        }
-                    },
-                    (error) => {
-                        console.log('error: ', error);
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
-        }
-    }
     /**
      * method for delete selected record
      */
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Water Entries',
-                message: 'Are you sure you want to delete this water entry ?',
+                title: 'Log-in Logs',
+                message: 'Are you sure you want to delete this login log?',
             },
             width: '30%',
         });
         confirmation.afterClosed().subscribe((dialogResult) => {
             if (dialogResult === true) {
                 // this.spinnerService.show();
-                this.baseService.delete(Apiurl.waterEntryList + id).subscribe(
+                this.baseService.delete(Apiurl.logInLogList + id).subscribe(
                     (response: any) => {
                         if (response) {
                             console.log('response: ', response);
@@ -262,7 +172,7 @@ Public methods
                                 response.message,
                                 'success-style'
                             );
-                            this.getAllEntryList();
+                            this.getAllLogList();
                         } else {
                             this.toastService.showToastMessage(
                                 response.message,

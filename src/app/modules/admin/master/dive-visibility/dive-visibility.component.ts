@@ -162,7 +162,7 @@ Public methods
       this.submitted = false;
       this.dialog.open(templateRef, {
           disableClose: true,
-          width: '28%',
+          width: '22%',
           height: '26%',
       });
       if (this.isEdit) {
