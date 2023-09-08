@@ -67,8 +67,7 @@ export class LanguagesComponent implements OnInit {
     }
 
     /**
-     * Method to get all language data
-     */
+     * Method to get and set all data to data source     */
     private getLanguagesList(): void {
         this.loader.showLoader();
         const params = {

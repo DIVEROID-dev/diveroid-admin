@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center
         sm:justify-between">
         <div class="flex flex-row mb-2 justify-between w-full">
-            <div class="text-4xl pl-5 font-semibold">Nations</div>
+            <div class="text-4xl pl-5 font-semibold">Device Master</div>
         </div>
     </div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center
@@ -19,9 +19,9 @@
             </mat-form-field>
         </div>
         <div class="mt-4 sm:mt-0">
-            <button mat-flat-button color="primary" (click)="openDialog(nationModal,false)" matTooltip="Add Nation">
+            <button mat-flat-button color="primary" (click)="openDialog(categorymodal,false)" matTooltip="Add Device">
                 <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
-                <span class="ml-2 mr-1">Add Nation</span>
+                <span class="ml-2 mr-1">Add Device</span>
             </button>
         </div>
     </div>
@@ -38,33 +38,59 @@
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="Nation">
+            <ng-container matColumnDef="DeviceName">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    <span> Nation </span>
+                    <span> Device Name </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
                     <span>
-                        {{element.Nation
+                        {{element.DeviceName
                         }}
                     </span>
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="NationCode">
+            <ng-container matColumnDef="DeviceSerial">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    <span> Nation Code </span>
+                    <span> Serial No. </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element.NationCode}}
+                    {{element.DeviceSerial}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="DeviceCategoryName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <span> Device Category Name </span>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.devicecatgory?.DeviceCategoryName}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="DeviceThumb">
+                <th mat-header-cell *matHeaderCellDef>
+                    <span>Device Image </span>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <img [src]="element.DeviceThumb" class="w-10" />
+                </td>
+            </ng-container>
+         
+            <ng-container matColumnDef="WarrantyYear">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <span> Warranty Year </span>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{element?.devicecatgory?.WarrantyYear}}
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="ImageUrl">
+            <ng-container matColumnDef="IsEnabled">
                 <th mat-header-cell *matHeaderCellDef>
-                    <span>Image Url </span>
+                    <span>Is Enable </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    <img [src]="element.ImageUrl" class="w-10" />
+                    <mat-slide-toggle [disabled]="true" [checked]="element.IsEnabled"
+                        color="primary"></mat-slide-toggle>
                 </td>
             </ng-container>
 
@@ -75,7 +101,7 @@
                 </th>
                 <td mat-cell *matCellDef="let element">
                     <div class="flex flex-row py-2 justify-center gap-2">
-                        <div class="" (click)="openDialog(nationModal,true,element)">
+                        <div class="" (click)="openDialog(categorymodal,true,element)">
                             <mat-icon class="icon-size-7 text-green-500
                                 cursor-pointer" matTooltip="Update" [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
                         </div>
@@ -105,38 +131,53 @@
     </div>
 </div>
 <!-- Add or update dialog Box -->
-<ng-template let-data #nationModal>
+<ng-template let-data #categorymodal>
     <div class="form-container">
-        <h1 class="mat-dialog-title text-center">{{!isEdit?'Add':'Update'}} Nation</h1>
+        <h1 class="mat-dialog-title text-center">{{!isEdit?'Add':'Update'}} Device</h1>
         <div class="mat-dialog-content">
 
-            <!-- Form Group Nation -->
-            <form [formGroup]="Nationform">
+            <form [formGroup]="categoryform">
+
                 <mat-form-field appearance="outline" class="example-full-width">
-                    <!-- Nation  field  -->
-                    <mat-label>Nation Name<span class="required-field"> *</span></mat-label>
-                    <input type="text" matInput formControlName="Nation" placeholder="Enter Nation Name"
+                    <!-- Device  Name  field  -->
+                    <mat-label>Device Name<span class="required-field"> *</span></mat-label>
+                    <input type="text" matInput formControlName="DeviceName" placeholder="Enter Device  Name"
                         [maxlength]="50">
-                    <mat-error *ngIf=" Nationform.controls['Nation'].hasError('required')">
-                        Please enter nation name
+                    <mat-error *ngIf=" categoryform.controls['DeviceName'].hasError('required')">
+                        Please enter name
                     </mat-error>
-                    <mat-error *ngIf="Nationform.controls['Nation'].hasError('pattern')">
-                        Please enter valid nation name
-                    </mat-error>
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="example-full-width">
-                    <!-- Nation Code field -->
-                    <mat-label>Nation Code<span class="required-field"> *</span></mat-label>
-                    <input type="text" matInput formControlName="NationCode" placeholder="Enter Nation Code "
-                        [maxlength]="15">
-                    <mat-error *ngIf="Nationform.controls['NationCode'].hasError('required')">
-                        Please enter nation code
-                    </mat-error>
-                    <mat-error *ngIf="Nationform.controls['NationCode'].hasError('pattern')">
-                        Please enter valid nation code
+                    <mat-error *ngIf="categoryform.controls['DeviceName'].hasError('pattern')">
+                        Please enter valid device name
                     </mat-error>
                 </mat-form-field>
 
+                <div class="row">
+                    <div class="mb-3 example-form-fields gap-2" style="display: flex; flex-wrap: wrap;">
+                        <mat-form-field appearance="outline" style="flex: 1; margin-right: 10px;">
+                            <mat-label>Device Serial No.<span class="required-field"> *</span></mat-label>
+                            <input type="text" matInput formControlName="DeviceSerial"
+                                placeholder="Enter Device Serial No." >
+                            <mat-error *ngIf="categoryform.controls['DeviceSerial'].hasError('required')">
+                                Please enter device serial no.
+                            </mat-error>
+                            <mat-error *ngIf="categoryform.controls['DeviceSerial'].hasError('pattern')">
+                                Please enter valid device serial
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" style="flex: 1;">
+                            <mat-label>Device Category</mat-label>
+                            <mat-select formControlName="DeviceCategoryId" placeholder="Select Device Category">
+                                <mat-option *ngFor="let device of deviceList" [value]="device.id">
+                                    {{device.DeviceCategoryName}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="categoryform.controls['DeviceCategoryId'].hasError('required')">
+                                Please select device category.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
                 <mat-label>Upload Image<span class="required-field"> *</span></mat-label>
                 <div class="row flex flex-auto items-end mt-5 justify-left">
                     <div
@@ -157,14 +198,9 @@
                             </div>
                         </div>
                         <img class="object-cover w-full h-full"
-                            [src]="imageFile" [ngClass]="imageFile==undefined ? 'hidden' :''">
+                            [src]="imageProfile" [ngClass]="imageProfile==undefined ? 'hidden' :''">
                     </div>
                 </div>
-              
-                
-                
-
-
 
 
                 <div class="justify-end md:flex gap-2 mt-6">

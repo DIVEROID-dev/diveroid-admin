@@ -115,6 +115,13 @@ export const appRoutes: Route[] = [
                         (m) => m.MembersModule
                     ),
             },
+            {
+                path: 'devices',
+                loadChildren: () =>
+                    import('./modules/admin/devices/devices.module').then(
+                        (m) => m.DevicesModule
+                    ),
+            },
             // 404 & Catch all
             {
                 path: '404-not-found',

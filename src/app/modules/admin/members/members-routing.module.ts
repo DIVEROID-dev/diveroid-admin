@@ -5,7 +5,11 @@ import { LoginLogComponent } from './login-log/login-log.component';
 import { BlacklistedTokensComponent } from './blacklisted-tokens/blacklisted-tokens.component';
 
 const routes: Routes = [
-    { path: '', component: GuestMemberComponent },
+    {
+        path: '',
+        redirectTo: 'users', 
+        pathMatch: 'full',
+    },
     {
         path: 'users',
         component: GuestMemberComponent,

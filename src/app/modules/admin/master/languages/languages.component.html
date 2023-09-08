@@ -140,8 +140,8 @@
                     <mat-label>Native Language<span class="required-field"> *</span></mat-label>
                     <input class="form-control" placeholder="Enter Native Language" type="text" name="NativeLanguage" [maxlength]="50" autocomplete="off"
                         matInput formControlName="NativeLanguage" />
-                    <mat-error *ngIf="languageForm.controls['NativeLanguage'].hasError('required')"> Please enter native
-                        language.</mat-error>
+                    <mat-error *ngIf="languageForm.controls['NativeLanguage'].hasError('required')">Native
+                        Language is required.</mat-error>
                     <mat-error *ngIf="languageForm.controls['NativeLanguage'].hasError('pattern')">Please
                         enter valid native language.</mat-error>
                 </mat-form-field>

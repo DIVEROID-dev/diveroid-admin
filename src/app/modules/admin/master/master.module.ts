@@ -17,8 +17,6 @@ import { BcdVentilatorComponent } from './bcd-ventilator/bcd-ventilator.componen
 import { SuitAccessoriesComponent } from './suit-accessories/suit-accessories.component';
 import { NationsComponent } from './nations/nations.component';
 import { StatusComponent } from './status/status.component';
-import { MatChipsModule } from '@angular/material/chips';
-
 
 @NgModule({
   declarations: [
@@ -41,7 +39,6 @@ import { MatChipsModule } from '@angular/material/chips';
     CommonModule,
     MasterRoutingModule,
     SharedModule,
-    MatChipsModule
   ]
 })
 export class MasterModule { }

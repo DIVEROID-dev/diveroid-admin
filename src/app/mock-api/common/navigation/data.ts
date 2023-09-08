@@ -2,7 +2,7 @@
 import { FuseNavigationItem } from '@fuse/components/navigation';
 
 export const defaultNavigation: FuseNavigationItem[] = [
-  {
+    {
         id: 'master',
         title: 'Master',
         type: 'collapsable',
@@ -143,6 +143,36 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 type: 'basic',
                 link: 'members/black-listed-tokens',
                 icon: 'mat_outline:block',
+            },
+        ],
+    },
+    {
+        id: 'devices',
+        title: 'Devices',
+        type: 'collapsable',
+        icon: 'mat_outline:devices',
+        link: 'devices',
+        children: [
+            {
+                id: 'devices/device-categories',
+                title: 'Device Categories',
+                type: 'basic',
+                link: 'devices/device-categories',
+                icon: 'mat_solid:device_hub',
+            },
+            {
+                id: 'devices/devices',
+                title: 'Devices Master',
+                type: 'basic',
+                link: 'devices/devices',
+                icon: 'mat_outline:important_devices',
+            },
+            {
+                id: 'devices/member-devices',
+                title: 'Member Devices',
+                type: 'basic',
+                link: 'devices/member-devices',
+                icon: 'mat_outline:devices_other',
             },
         ],
     },

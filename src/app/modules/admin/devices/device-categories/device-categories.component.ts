@@ -17,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-nations',
-    templateUrl: './nations.component.html',
-    styleUrls: ['./nations.component.scss'],
+    selector: 'app-device-categories',
+    templateUrl: './device-categories.component.html',
+    styleUrls: ['./device-categories.component.scss'],
 })
-export class NationsComponent implements OnInit {
+export class DeviceCategoriesComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,10 +36,11 @@ export class NationsComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    Nationform: FormGroup;
+    categoryform: FormGroup;
     submitted = false;
     selectedFile: any = [];
-    imageFile
+    selectedValue: string;
+    deviceList: any[];
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -49,7 +50,7 @@ export class NationsComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getNationList());
+            .subscribe(() => this.getAllDeviceList());
     }
 
     ngOnInit(): void {
@@ -63,12 +64,12 @@ export class NationsComponent implements OnInit {
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getNationList();
+        this.getAllDeviceList();
     }
 
     /**
      * Method to get and set all data to data source     */
-    private getNationList(): void {
+    private getAllDeviceList(): void {
         this.loader.showLoader();
 
         const params = {
@@ -84,11 +85,11 @@ export class NationsComponent implements OnInit {
         }
 
         this.baseService
-            .get(Apiurl.nationsList, params)
+            .get(Apiurl.deviceCategoryList, params)
             .subscribe((response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.nations;
+                    this.dataSource.data = response.data.deviceCategory;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -107,23 +108,38 @@ export class NationsComponent implements OnInit {
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = ['id', 'Nation', 'NationCode','ImageUrl', 'action'];
+        this.columns = [
+            'id',
+            'DeviceCategoryName',
+            'DeviceCategoryThumb',
+            'WarrantyYear',
+            'IsEnabled',
+            'action',
+        ];
     }
 
     /*---------------------------------
-  Public methods
-  -----------------------------------*/
-
+Public methods
+-----------------------------------*/
+    getAllStaticDevice() {
+        this.baseService.get(Apiurl.staticDevices).subscribe((res: any) => {
+            if (res) this.deviceList = res.data.deviceCategories;
+        });
+    }
     /**
      * define form
      */
     defineForm() {
-        this.Nationform = this.fb.group({
-            Nation: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
-            NationCode: [
+        this.categoryform = this.fb.group({
+            DeviceCategoryName: [
                 '',
                 [Validators.required, Validators.pattern(/^\S.*$/)],
             ],
+            WarrantyYear: [
+                '',
+                [Validators.required, Validators.max(99), Validators.min(1)],
+            ],
+            parentId: [0],
         });
     }
 
@@ -132,16 +148,17 @@ export class NationsComponent implements OnInit {
      *method for open dialog box
      */
     openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
+        this.getAllStaticDevice();
         this.id = null;
-        this.imageFile = null;
         this.selectedFile = null;
+        this.imageFile = null;
         this.defineForm();
         this.isEdit = isEdit;
         this.submitted = false;
         this.dialog.open(templateRef, {
             disableClose: true,
-            width: '36%',
-            height: '54%',
+            width: '45%',
+            height: '55%',
         });
         if (this.isEdit) {
             this.setFormValue(data);
@@ -152,9 +169,12 @@ export class NationsComponent implements OnInit {
      */
     setFormValue(data: any) {
         this.id = data.id;
-        this.Nationform.controls.Nation.setValue(data.Nation);
-        this.Nationform.controls.NationCode.setValue(data.NationCode);
-        this.imageFile =  data.ImageUrl
+        this.categoryform.controls.DeviceCategoryName.setValue(
+            data.DeviceCategoryName
+        );
+        this.categoryform.controls.WarrantyYear.setValue(data.WarrantyYear);
+        this.categoryform.controls.parentId.setValue(data.ParentId);
+        this.imageFile = data.DeviceCategoryThumb;
     }
     /**
      * input method for search the data
@@ -179,7 +199,7 @@ export class NationsComponent implements OnInit {
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getNationList();
+        this.getAllDeviceList();
     }
     /**
      * Method for sorting data
@@ -187,7 +207,7 @@ export class NationsComponent implements OnInit {
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getNationList();
+        this.getAllDeviceList();
     }
     /**
      * method for save form
@@ -195,22 +215,28 @@ export class NationsComponent implements OnInit {
      */
     saveForm() {
         this.submitted = true;
-        if (!this.Nationform.valid ||
-            (!this.isEdit && this.selectedFile == null)) {
-            return this.toastService.showToastMessage('All fields are mandatory', 'error-style');
+        if (
+            !this.categoryform.valid ||
+            (!this.isEdit && this.selectedFile == null)
+        ) {
+            return this.toastService.showToastMessage(
+                'Please fill all the fields properly',
+                'error-style'
+            );
         }
         const formData = new FormData();
         const formValues = {
-            Nation: this.Nationform.value.Nation,
-            NationCode: this.Nationform.value.NationCode,
+            ParentId: this.categoryform.value.parentId,
+            DeviceCategoryName: this.categoryform.value.DeviceCategoryName,
+            WarrantyYear: this.categoryform.value.WarrantyYear,
             file: this.selectedFile,
         };
         Object.entries(formValues).forEach(([key, value]) => {
             formData.append(key, value);
         });
         const APIURL = this.isEdit
-            ? Apiurl.nationsList + this.id
-            : Apiurl.nationsList;
+            ? Apiurl.deviceCategoryList + this.id
+            : Apiurl.deviceCategoryList;
         this.baseService.post(APIURL, formData).subscribe(
             (res: any) => {
                 if (res) {
@@ -219,7 +245,7 @@ export class NationsComponent implements OnInit {
                         'success-style'
                     );
                     this.dialog.closeAll();
-                    this.getNationList();
+                    this.getAllDeviceList();
                 }
             },
             (error) => {
@@ -234,44 +260,48 @@ export class NationsComponent implements OnInit {
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Nations',
-                message: 'Are you sure you want to delete this nation?',
+                title: 'Device Categories',
+                message:
+                    'Are you sure you want to delete this device category?',
             },
             width: '30%',
         });
         confirmation.afterClosed().subscribe((dialogResult) => {
             if (dialogResult === true) {
                 // this.spinnerService.show();
-                this.baseService.delete(Apiurl.nationsList + id).subscribe(
-                    (response: any) => {
-                        if (response) {
-                            // this.spinnerService.show();
+                this.baseService
+                    .delete(Apiurl.deviceCategoryList + id)
+                    .subscribe(
+                        (response: any) => {
+                            if (response) {
+                                // this.spinnerService.show();
+                                this.toastService.showToastMessage(
+                                    response.message,
+                                    'success-style'
+                                );
+                                this.getAllDeviceList();
+                            } else {
+                                this.toastService.showToastMessage(
+                                    response.message,
+                                    'error-style'
+                                );
+                            }
+                        },
+                        (error) => {
+                            // Handle errors
                             this.toastService.showToastMessage(
-                                response.message,
-                                'success-style'
-                            );
-                            this.getNationList();
-                        } else {
-                            this.toastService.showToastMessage(
-                                response.message,
+                                error,
                                 'error-style'
                             );
                         }
-                    },
-                    (error) => {
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
+                    );
             }
         });
     }
+    imageFile;
     /**
      * method for set the selected file
-     * @param event 
+     * @param event
      */
     onFileSelected(event) {
         const reader = new FileReader();

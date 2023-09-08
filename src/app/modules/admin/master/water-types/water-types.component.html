@@ -135,7 +135,7 @@
                         <mat-label>Upload Active Image<span class="required-field"> *</span></mat-label>
                         <div class="row flex flex-auto items-end mt-5 justify-left">
                             <div
-                            class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container ">
+                            class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container border border-gray-300 ">
                             <div class="absolute inset-0  z-10">
                             </div>
                             <div class="absolute inset-0 flex items-center justify-center z-20">
@@ -154,7 +154,7 @@
                                     </div>
                                 </div>
                                 <img class="object-cover w-full h-full"
-                                    [src]="activeImage">
+                                    [src]="activeImage" [ngClass]="activeImage==undefined ? 'hidden' :''">
                             </div>
                         </div>
                     </div>
@@ -163,7 +163,7 @@
                             <mat-label>Upload In Active Image<span class="required-field"> *</span></mat-label>
                             <div class="row flex flex-auto items-end mt-5 justify-left">
                                 <div
-                                    class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container">
+                                    class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container border border-gray-300">
                                     <div class="absolute inset-0  z-10">
                                     </div>
                                     <div class="absolute inset-0 flex items-center justify-center z-20">
@@ -182,7 +182,7 @@
                                         </div>
                                     </div>
                                     <img class="object-cover w-full h-full"
-                                        [src]="inActiveImage">
+                                        [src]="inActiveImage" [ngClass]="inActiveImage==undefined ? 'hidden' :''">
                                 </div>
                             </div>
                         </div>

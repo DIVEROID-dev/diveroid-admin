@@ -1,8 +1,9 @@
-.example-full-width {
-    width: 100%;
+.file-input {
+    display: none;
 }
 .image-container {
     position: relative;
+    // border: 1px solid #555;
 }
 
 .image-container::before {
@@ -15,7 +16,8 @@
     background-color: black;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
-    pointer-events: none; /* Allow interactions with elements underneath */
+    pointer-events: none;
+    
 }
 
 .image-container img {
@@ -23,11 +25,11 @@
 }
 
 .image-container:hover img {
-    filter: blur(5px); /* Adjust the blur amount as desired */
+    filter: blur(5px);
 }
 
 .image-container:hover::before {
-    opacity: 0.5; /* Adjust the opacity level as desired */
+    opacity: 0.5;
 }
 
 .image-container .upload-icon {
