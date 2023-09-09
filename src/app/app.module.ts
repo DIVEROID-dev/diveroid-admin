@@ -13,7 +13,7 @@ import { LayoutModule } from 'app/layout/layout.module';
 import { AppComponent } from 'app/app.component';
 import { appRoutes } from 'app/app.routing';
 import { MasterModule } from './modules/admin/master/master.module';
-import { FuseSplashScreenModule } from '@fuse/services/splash-screen';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy       : PreloadAllModules,
@@ -43,6 +43,7 @@ const routerConfig: ExtraOptions = {
         // 3rd party modules that require global configuration via forRoot
         MarkdownModule.forRoot({}),
         MasterModule,
+        NgxSpinnerModule
     ],
     bootstrap   : [
         AppComponent

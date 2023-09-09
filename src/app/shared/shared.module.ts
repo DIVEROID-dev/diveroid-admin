@@ -12,7 +12,6 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonDeleteModalComponent } from './common-delete-modal/common-delete-modal.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 
@@ -31,7 +30,6 @@ import { MatSelectModule } from '@angular/material/select';
         MatSortModule,
         MatFormFieldModule,
         MatDialogModule,
-        MatProgressBarModule,
         MatSlideToggleModule,
         MatSelectModule
     ],
@@ -49,7 +47,6 @@ import { MatSelectModule } from '@angular/material/select';
         MatSortModule,
         MatFormFieldModule,
         MatDialogModule,
-        MatProgressBarModule,
         MatSlideToggleModule,
         MatSelectModule
     ],
