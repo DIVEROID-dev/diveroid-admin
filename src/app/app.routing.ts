@@ -122,6 +122,13 @@ export const appRoutes: Route[] = [
                         (m) => m.DevicesModule
                     ),
             },
+            {
+                path: 'my-info',
+                loadChildren: () =>
+                    import('./modules/admin/my-info/my-info.module').then(
+                        (m) => m.MyInfoModule
+                    ),
+            },
             // 404 & Catch all
             {
                 path: '404-not-found',

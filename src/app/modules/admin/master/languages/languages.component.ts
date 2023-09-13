@@ -79,12 +79,11 @@ export class LanguagesComponent implements OnInit {
         }
         if (this.sortDirection !== '' && this.sortColumn !== '') {
             params['sortDirection'] = this.sortDirection;
-            params['sortColumn'] = this.sortColumn;
+            params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.languagesList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.languagesList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
                     this.dataSource.data = response.data.languages;
@@ -99,7 +98,14 @@ export class LanguagesComponent implements OnInit {
                         'error-style'
                     );
                 }
-            });
+            },
+            (error) => {
+                // Handle errors
+                this.dataSource.data = [];
+                this.paginator.length = 0;
+                // this.toastService.showToastMessage(error, 'error-style');
+            }
+        );
     }
 
     /**
@@ -268,7 +274,6 @@ export class LanguagesComponent implements OnInit {
                 this.baseService.delete(Apiurl.languagesList + id).subscribe(
                     (response: any) => {
                         if (response) {
-                            console.log('response: ', response);
                             // this.spinnerService.show();
                             this.toastService.showToastMessage(
                                 response.data,

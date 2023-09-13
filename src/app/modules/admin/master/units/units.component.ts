@@ -76,7 +76,7 @@ export class UnitsComponent implements OnInit {
     }
 
     /***
-     * method for get all listing data 
+     * method for get all listing data
      */
     getAllUnitList() {
         this.loader.showLoader();
@@ -89,12 +89,11 @@ export class UnitsComponent implements OnInit {
         }
         if (this.sortDirection !== '' && this.sortColumn !== '') {
             params['sortDirection'] = this.sortDirection;
-            params['sortColumn'] = this.sortColumn;
+            params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.unitList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.unitList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
                     this.dataSource.data = response.data.units;
@@ -109,7 +108,14 @@ export class UnitsComponent implements OnInit {
                         'error-style'
                     );
                 }
-            });
+            },
+            (error) => {
+                // Handle errors
+                this.dataSource.data = [];
+                this.paginator.length = 0;
+                // this.toastService.showToastMessage(error, 'error-style');
+            }
+        );
     }
 
     /*---------------------------------
@@ -260,7 +266,6 @@ Public methods
                 this.baseService.delete(Apiurl.unitList + id).subscribe(
                     (response: any) => {
                         if (response) {
-                            console.log('response: ', response);
                             // this.spinnerService.show();
                             this.toastService.showToastMessage(
                                 response.data,

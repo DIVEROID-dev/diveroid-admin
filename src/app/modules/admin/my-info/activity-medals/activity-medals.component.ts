@@ -17,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-suit-accessories',
-    templateUrl: './suit-accessories.component.html',
-    styleUrls: ['./suit-accessories.component.scss'],
+    selector: 'app-activity-medals',
+    templateUrl: './activity-medals.component.html',
+    styleUrls: ['./activity-medals.component.scss'],
 })
-export class SuitAccessoriesComponent implements OnInit {
+export class ActivityMedalsComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,8 +36,12 @@ export class SuitAccessoriesComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    accessoryForm: FormGroup;
+    activityMedalForm: FormGroup;
     submitted = false;
+    selectedFile: any;
+    imageFile;
+    languageList: any = [];
+    divingModeList: any = [];
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -47,7 +51,7 @@ export class SuitAccessoriesComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getSuitAccessoryList());
+            .subscribe(() => this.activityMedalsList());
     }
 
     ngOnInit(): void {
@@ -55,6 +59,7 @@ export class SuitAccessoriesComponent implements OnInit {
         this.dataInitializer();
         this.defineForm();
     }
+
     /*---------------------------------
 Private  methods
 -----------------------------------*/
@@ -64,19 +69,27 @@ Private  methods
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getSuitAccessoryList();
+        this.activityMedalsList();
     }
 
     /**
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = ['id', 'Name', 'action'];
+        this.columns = [
+            'id',
+            'Thumb',
+            'MaxLikes',
+            'MinLikes',
+            'MaxReviews',
+            'MinReviews',
+            'action',
+        ];
     }
     /***
      * method for get all listing data
      */
-    getSuitAccessoryList() {
+    activityMedalsList() {
         this.loader.showLoader();
         const params = {
             index: this.pageIndex + 1,
@@ -90,11 +103,12 @@ Private  methods
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService.get(Apiurl.suitAccessoryList, params).subscribe(
-            (response: any) => {
+        this.baseService
+            .get(Apiurl.activityMedalsList, params)
+            .subscribe((response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.suitAccessory;
+                    this.dataSource.data = response.data.activityMedal;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -123,8 +137,23 @@ Public methods
      * method for define form
      */
     defineForm() {
-        this.accessoryForm = this.fb.group({
-            Name: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+        this.activityMedalForm = this.fb.group({
+            MinReviews: [
+                '',
+                [Validators.required, Validators.min(1),],
+            ],
+            MaxReviews: [
+                '',
+                [Validators.required, Validators.min(1)],
+            ],
+            MinLikes: [
+                '',
+                [Validators.required, Validators.min(1)],
+            ],
+            MaxLikes: [
+                '',
+                [Validators.required, Validators.min(1)],
+            ],
         });
     }
 
@@ -133,7 +162,11 @@ Public methods
      */
     setFormValue(data: any) {
         this.id = data.id;
-        this.accessoryForm.controls.Name.setValue(data.Name);
+        this.activityMedalForm.controls.MinReviews.setValue(data.MinReviews);
+        this.activityMedalForm.controls.MaxReviews.setValue(data.MaxReviews);
+        this.activityMedalForm.controls.MinLikes.setValue(data.MinLikes);
+        this.activityMedalForm.controls.MaxLikes.setValue(data.MaxLikes);
+        this.imageFile = data?.Thumb;
     }
 
     /**
@@ -157,7 +190,7 @@ Public methods
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getSuitAccessoryList();
+        this.activityMedalsList();
     }
 
     /**
@@ -166,13 +199,15 @@ Public methods
      */
     openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
         this.id = null;
+        this.imageFile = null;
+        this.selectedFile = null;
         this.defineForm();
         this.isEdit = isEdit;
         this.submitted = false;
         this.dialog.open(templateRef, {
             disableClose: true,
-            width: '22%',
-            height: '26%',
+            width: '40%',
+            height: '53%',
         });
         if (this.isEdit) {
             this.setFormValue(data);
@@ -186,7 +221,7 @@ Public methods
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getSuitAccessoryList();
+        this.activityMedalsList();
     }
 
     /***
@@ -194,58 +229,45 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
-        if (!this.accessoryForm.valid) {
-            return;
+        if (
+            !this.activityMedalForm.valid ||
+            (!this.isEdit && this.selectedFile == null)
+        ) {
+            return this.toastService.showToastMessage(
+                'All fields are mandatory',
+                'error-style'
+            );
         }
-        if (this.isEdit) {
-            this.baseService
-                .put(
-                    Apiurl.suitAccessoryList + this.id,
-                    this.accessoryForm.value
-                )
-                .subscribe(
-                    (res: any) => {
-                        if (res) {
-                            this.toastService.showToastMessage(
-                                res.message,
-                                'success-style'
-                            );
-                            this.dialog.closeAll();
-                            this.getSuitAccessoryList();
-                        }
-                    },
-                    (error) => {
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
-        } else if (!this.isEdit) {
-            this.baseService
-                .post(Apiurl.suitAccessoryList, this.accessoryForm.value)
-                .subscribe(
-                    (res: any) => {
-                        if (res) {
-                            this.toastService.showToastMessage(
-                                res.message,
-                                'success-style'
-                            );
-                            this.dialog.closeAll();
-                            this.getSuitAccessoryList();
-                        }
-                    },
-                    (error) => {
-                        console.log('error: ', error);
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
-        }
+        const APIURL = this.isEdit
+            ? Apiurl.activityMedalsList + this.id
+            : Apiurl.activityMedalsList;
+        const formData = new FormData();
+        const formValues = {
+            MinLikes: this.activityMedalForm.value.MinLikes,
+            MaxLikes: this.activityMedalForm.value.MaxLikes,
+            MinReviews: this.activityMedalForm.value.MinReviews,
+            MaxReviews: this.activityMedalForm.value.MaxReviews,
+            file: this.selectedFile,
+        };
+        Object.entries(formValues).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        this.baseService.post(APIURL, formData).subscribe(
+            (res: any) => {
+                if (res) {
+                    this.toastService.showToastMessage(
+                        res.message,
+                        'success-style'
+                    );
+                    this.dialog.closeAll();
+                    this.activityMedalsList();
+                }
+            },
+            (error) => {
+                // Handle errors
+                this.toastService.showToastMessage(error, 'error-style');
+            }
+        );
     }
     /**
      * method for delete selected record
@@ -253,8 +275,8 @@ Public methods
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Suit Accessories',
-                message: 'Are you sure you want to delete this suit accessory?',
+                title: 'Activity Medals',
+                message: 'Are you sure you want to delete this activity medal?',
             },
             width: '30%',
         });
@@ -262,7 +284,7 @@ Public methods
             if (dialogResult === true) {
                 // this.spinnerService.show();
                 this.baseService
-                    .delete(Apiurl.suitAccessoryList + id)
+                    .delete(Apiurl.activityMedalsList + id)
                     .subscribe(
                         (response: any) => {
                             if (response) {
@@ -271,7 +293,7 @@ Public methods
                                     response.message,
                                     'success-style'
                                 );
-                                this.getSuitAccessoryList();
+                                this.activityMedalsList();
                             } else {
                                 this.toastService.showToastMessage(
                                     response.message,
@@ -289,5 +311,28 @@ Public methods
                     );
             }
         });
+    }
+    /***
+     * method for set the selected file and display
+     */
+    onFileSelected(event) {
+        const reader = new FileReader();
+        const file = event.target.files[0];
+        if (
+            file.type === 'image/jpeg' ||
+            file.type === 'image/png' ||
+            file.type === 'image/jpg'
+        ) {
+            if (file) reader.readAsDataURL(file);
+            reader.onload = () => {
+                this.imageFile = reader.result;
+            };
+            this.selectedFile = file;
+        } else {
+            this.toastService.showToastMessage(
+                'Please select Image Extention .jpg .Jpeg .png format',
+                'error-style'
+            );
+        }
     }
 }

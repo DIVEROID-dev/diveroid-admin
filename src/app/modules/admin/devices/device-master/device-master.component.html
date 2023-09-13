@@ -84,12 +84,12 @@
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="IsEnabled">
+            <ng-container matColumnDef="IsPaired">
                 <th mat-header-cell *matHeaderCellDef>
-                    <span>Is Enable </span>
+                    <span>Is Paired </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    <mat-slide-toggle [disabled]="true" [checked]="element.IsEnabled"
+                    <mat-slide-toggle [disabled]="true" [checked]="element.IsPaired"
                         color="primary"></mat-slide-toggle>
                 </td>
             </ng-container>

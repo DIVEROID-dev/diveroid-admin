@@ -93,7 +93,7 @@ export class WaterTypesComponent implements OnInit {
         }
         if (this.sortDirection !== '' && this.sortColumn !== '') {
             params['sortDirection'] = this.sortDirection;
-            params['sortColumn'] = this.sortColumn;
+            params['sortOption'] = this.sortColumn;
         }
 
         this.baseService
@@ -113,6 +113,11 @@ export class WaterTypesComponent implements OnInit {
                         'error-style'
                     );
                 }
+            }, (error) => {
+                // Handle errors
+                this.dataSource.data = [];
+                this.paginator.length = 0;
+                // this.toastService.showToastMessage(error, 'error-style');
             });
     }
     /*---------------------------------

@@ -176,4 +176,41 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
+    {
+        id: 'my-info',
+        title: 'My Info',
+        type: 'collapsable',
+        icon: 'mat_outline:attribution',
+        link: 'my-info',
+        children: [
+            {
+                id: 'my-info/organizations',
+                title: 'Organizations',
+                type: 'basic',
+                icon: 'mat_outline:account_tree',
+                link: 'my-info/organizations',
+            },
+            {
+                id: 'my-info/diving-levels',
+                title: 'Diving Levels',
+                type: 'basic',
+                icon: 'mat_outline:trending_up',
+                link: 'my-info/diving-levels',
+            },
+            {
+                id: 'my-info/avatars',
+                title: 'Avatars',
+                type: 'basic',
+                icon: 'mat_outline:person_pin',
+                link: 'my-info/avatars',
+            },
+            {
+                id: 'my-info/activity-medals',
+                title: 'Activity Medals',
+                type: 'basic',
+                icon: 'iconsmind:medal_3',
+                link: 'my-info/activity-medals',
+            },
+        ],
+    },
 ];

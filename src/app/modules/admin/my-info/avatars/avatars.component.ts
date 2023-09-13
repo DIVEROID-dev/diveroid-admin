@@ -17,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-login-log',
-    templateUrl: './login-log.component.html',
-    styleUrls: ['./login-log.component.scss'],
+    selector: 'app-avatars',
+    templateUrl: './avatars.component.html',
+    styleUrls: ['./avatars.component.scss'],
 })
-export class LoginLogComponent implements OnInit {
+export class AvatarsComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,8 +36,10 @@ export class LoginLogComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
+    avatarForm: FormGroup;
     submitted = false;
-
+    selectedFile: any;
+    imageFile;
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -47,13 +49,15 @@ export class LoginLogComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllLogList());
+            .subscribe(() => this.getAllAvatar());
     }
 
     ngOnInit(): void {
         this.searchText = new FormControl('');
         this.dataInitializer();
+        this.defineForm();
     }
+
     /*---------------------------------
 Private  methods
 -----------------------------------*/
@@ -63,20 +67,27 @@ Private  methods
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllLogList();
+        this.getAllAvatar();
     }
 
     /**
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = ['id', 'Name', 'MobileType', 'MobileDetails', 'action'];
+        this.columns = [
+            'id',
+            'Name',
+            'FileUrl',
+            'FileName',
+            'ContentType',
+            'FileSize',
+            'action',
+        ];
     }
-
     /***
      * method for get all listing data
      */
-    getAllLogList() {
+    getAllAvatar() {
         this.loader.showLoader();
         const params = {
             index: this.pageIndex + 1,
@@ -90,11 +101,11 @@ Private  methods
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService.get(Apiurl.logInLogList, params).subscribe(
+        this.baseService.get(Apiurl.avatarList, params).subscribe(
             (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.loginLog;
+                    this.dataSource.data = response.data.Avatars;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -115,10 +126,27 @@ Private  methods
             }
         );
     }
-
     /*---------------------------------
 Public methods
 -----------------------------------*/
+
+    /**
+     * method for define form
+     */
+    defineForm() {
+        this.avatarForm = this.fb.group({
+            Name: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+        });
+    }
+
+    /**
+     * update time set the form value
+     */
+    setFormValue(data: any) {
+        this.id = data.id;
+        this.avatarForm.controls.Name.setValue(data.Name);
+        this.imageFile = data?.FileUrl;
+    }
 
     /**
      * input method for search the data
@@ -135,14 +163,34 @@ Public methods
         this.searchText.setValue('');
         this.searchUpdater.next(this.filter.nativeElement.value);
     }
-
     /**
      * Method for sorting data
      */
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllLogList();
+        this.getAllAvatar();
+    }
+
+    /**
+     *
+     *method for open dialog box
+     */
+    openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
+        this.id = null;
+        this.selectedFile = null;
+        this.imageFile = null;
+        this.defineForm();
+        this.isEdit = isEdit;
+        this.submitted = false;
+        this.dialog.open(templateRef, {
+            disableClose: true,
+            width: '30%',
+            height: '45%',
+        });
+        if (this.isEdit) {
+            this.setFormValue(data);
+        }
     }
 
     /**
@@ -152,24 +200,66 @@ Public methods
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getAllLogList();
+        this.getAllAvatar();
     }
 
+    /***
+     * method for save form
+     */
+    saveForm() {
+        this.submitted = true;
+        if (
+            !this.avatarForm.valid ||
+            (!this.isEdit && this.selectedFile == null)
+        ) {
+            return this.toastService.showToastMessage(
+                'All fields are mandatory',
+                'error-style'
+            );
+        }
+        const APIURL = this.isEdit
+            ? Apiurl.avatarList + this.id
+            : Apiurl.avatarList;
+        const formData = new FormData();
+        const formValues = {
+            Name: this.avatarForm.value.Name,
+            file: this.selectedFile,
+        };
+        Object.entries(formValues).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        this.baseService.post(APIURL, formData).subscribe(
+            (res: any) => {
+                if (res) {
+                    this.toastService.showToastMessage(
+                        res.message,
+                        'success-style'
+                    );
+                    this.dialog.closeAll();
+                    this.getAllAvatar();
+                }
+            },
+            (error) => {
+                // Handle errors
+                this.toastService.showToastMessage(error, 'error-style');
+            }
+        );
+    }
     /**
      * method for delete selected record
      */
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Log-in Logs',
-                message: 'Are you sure you want to delete this login log?',
+                title: 'Avatars',
+                message: 'Are you sure you want to delete this avatar?',
             },
             width: '30%',
         });
         confirmation.afterClosed().subscribe((dialogResult) => {
             if (dialogResult === true) {
                 // this.spinnerService.show();
-                this.baseService.delete(Apiurl.logInLogList + id).subscribe(
+                this.baseService.delete(Apiurl.avatarList + id).subscribe(
                     (response: any) => {
                         if (response) {
                             // this.spinnerService.show();
@@ -177,7 +267,7 @@ Public methods
                                 response.message,
                                 'success-style'
                             );
-                            this.getAllLogList();
+                            this.getAllAvatar();
                         } else {
                             this.toastService.showToastMessage(
                                 response.message,
@@ -195,5 +285,28 @@ Public methods
                 );
             }
         });
+    }
+    /***
+     * method for set the selected file and display
+     */
+    onFileSelected(event) {
+        const reader = new FileReader();
+        const file = event.target.files[0];
+        if (
+            file.type === 'image/jpeg' ||
+            file.type === 'image/png' ||
+            file.type === 'image/jpg'
+        ) {
+            if (file) reader.readAsDataURL(file);
+            reader.onload = () => {
+                this.imageFile = reader.result;
+            };
+            this.selectedFile = file;
+        } else {
+            this.toastService.showToastMessage(
+                'Please select Image Extention .jpg .Jpeg .png format',
+                'error-style'
+            );
+        }
     }
 }

@@ -81,12 +81,11 @@ export class DeviceCategoriesComponent implements OnInit {
         }
         if (this.sortDirection !== '' && this.sortColumn !== '') {
             params['sortDirection'] = this.sortDirection;
-            params['sortColumn'] = this.sortColumn;
+            params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.deviceCategoryList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.deviceCategoryList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
                     this.dataSource.data = response.data.deviceCategory;
@@ -101,7 +100,14 @@ export class DeviceCategoriesComponent implements OnInit {
                         'error-style'
                     );
                 }
-            });
+            },
+            (error) => {
+                // Handle errors
+                this.dataSource.data = [];
+                this.paginator.length = 0;
+                // this.toastService.showToastMessage(error, 'error-style');
+            }
+        );
     }
 
     /**

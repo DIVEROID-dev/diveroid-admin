@@ -83,7 +83,7 @@ Private  methods
       }
       if (this.sortDirection !== '' && this.sortColumn !== '') {
           params['sortDirection'] = this.sortDirection;
-          params['sortColumn'] = this.sortColumn;
+          params['sortOption'] = this.sortColumn;
       }
 
       this.baseService
@@ -103,7 +103,12 @@ Private  methods
                       'error-style'
                   );
               }
-          });
+          }, (error) => {
+            // Handle errors
+            this.dataSource.data = [];
+            this.paginator.length = 0;
+            // this.toastService.showToastMessage(error, 'error-style');
+        });
   }
   /*---------------------------------
 Public methods
@@ -256,7 +261,6 @@ Public methods
                   .subscribe(
                       (response: any) => {
                           if (response) {
-                              console.log('response: ', response);
                               // this.spinnerService.show();
                               this.toastService.showToastMessage(
                                   response.message,

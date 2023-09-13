@@ -69,6 +69,24 @@ export const Apiurl = {
 
     //member devices list
     memberDevicesList: 'admin/memberDevice/',
+
+    
+    /**
+     * my info module
+     */
+
+    //organization api
+    organizationList: 'admin/organization/',
+
+    //diving level api
+    divingLevelList: 'admin/divingLevel/',
+
+    //avatars api
+    avatarList: 'admin/avatar/',
+
+    //activity medals api
+    activityMedalsList: 'admin/activityMedal/',
+    
     /**
      * static api
      */

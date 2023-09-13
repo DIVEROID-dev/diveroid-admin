@@ -17,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-water-entry',
-    templateUrl: './water-entry.component.html',
-    styleUrls: ['./water-entry.component.scss'],
+    selector: 'app-organization',
+    templateUrl: './organization.component.html',
+    styleUrls: ['./organization.component.scss'],
 })
-export class WaterEntryComponent implements OnInit {
+export class OrganizationComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,8 +36,14 @@ export class WaterEntryComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    waterEntryForm: FormGroup;
+    organizationForm: FormGroup;
     submitted = false;
+    activeFile: any ;
+    inActiveFile: any;
+    activeImage;
+    inActiveImage;
+    languageList: any = [];
+    divingModeList: any = [];
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -47,7 +53,7 @@ export class WaterEntryComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllEntryList());
+            .subscribe(() => this.getOrganizationList());
     }
 
     ngOnInit(): void {
@@ -65,19 +71,27 @@ Private  methods
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllEntryList();
+        this.getOrganizationList();
     }
 
     /**
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = ['id', 'Type', 'action'];
+        this.columns = [
+            'id',
+            'Name',
+            'ActiveThumb',
+            'InActiveThumb',
+            'DivingMode',
+            'Language',
+            'action',
+        ];
     }
     /***
-     * method for get all listing data 
+     * method for get all listing data
      */
-    getAllEntryList() {
+    getOrganizationList() {
         this.loader.showLoader();
         const params = {
             index: this.pageIndex + 1,
@@ -92,11 +106,11 @@ Private  methods
         }
 
         this.baseService
-            .get(Apiurl.waterEntryList, params)
+            .get(Apiurl.organizationList, params)
             .subscribe((response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.waterEntry;
+                    this.dataSource.data = response.data.Organization;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -108,12 +122,14 @@ Private  methods
                         'error-style'
                     );
                 }
-            }, (error) => {
+            },
+            (error) => {
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
                 // this.toastService.showToastMessage(error, 'error-style');
-            });
+            }
+        );
     }
     /*---------------------------------
 Public methods
@@ -123,8 +139,10 @@ Public methods
      * method for define form
      */
     defineForm() {
-        this.waterEntryForm = this.fb.group({
-            Type: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+        this.organizationForm = this.fb.group({
+            Name: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+            LanguageId: ['',[Validators.required]],
+            DivingMode: ['',[Validators.required]],
         });
     }
 
@@ -133,7 +151,11 @@ Public methods
      */
     setFormValue(data: any) {
         this.id = data.id;
-        this.waterEntryForm.controls.Type.setValue(data.Type);
+        this.organizationForm.controls.Name.setValue(data.Name);
+        this.organizationForm.controls.LanguageId.setValue(data.LanguageId);
+        this.organizationForm.controls.DivingMode.setValue(data.DivingMode);
+        this.activeImage = data?.ActiveThumb;
+        this.inActiveImage = data?.InActiveThumb;
     }
 
     /**
@@ -157,7 +179,7 @@ Public methods
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllEntryList();
+        this.getOrganizationList();
     }
 
     /**
@@ -166,13 +188,18 @@ Public methods
      */
     openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
         this.id = null;
+        this.activeFile = null;
+        this.inActiveFile = null;
+        this.activeImage = null;
+        this.inActiveImage = null;
         this.defineForm();
+        this.getStaticData();
         this.isEdit = isEdit;
         this.submitted = false;
         this.dialog.open(templateRef, {
             disableClose: true,
-            width: '22%',
-            height: '26%',
+            width: '40%',
+            height: '60%',
         });
         if (this.isEdit) {
             this.setFormValue(data);
@@ -186,63 +213,64 @@ Public methods
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getAllEntryList();
+        this.getOrganizationList();
     }
-
+    /**
+     * language data and diving mode data set to select option
+     */
+    getStaticData() {
+        this.baseService.get(Apiurl.languages).subscribe((res: any) => {
+            if (res) this.languageList = res.data.languages;
+        });
+        this.baseService.get(Apiurl.divingModes).subscribe((res: any) => {
+            if(res) this.divingModeList = res.data.divingModes
+        });
+    }
     /***
      * method for save form
      */
     saveForm() {
         this.submitted = true;
-        if (!this.waterEntryForm.valid) {
-            return;
+        if (
+            !this.organizationForm.valid ||
+            (!this.isEdit &&
+                (this.activeFile == null || this.inActiveFile == null))
+        ) {
+            return this.toastService.showToastMessage(
+                'All fields are mandatory',
+                'error-style'
+            );
         }
-        if (this.isEdit) {
-            this.baseService
-                .put(Apiurl.waterEntryList + this.id, this.waterEntryForm.value)
-                .subscribe(
-                    (res: any) => {
-                        if (res) {
-                            this.toastService.showToastMessage(
-                                res.message,
-                                'success-style'
-                            );
-                            this.dialog.closeAll();
-                            this.getAllEntryList();
-                        }
-                    },
-                    (error) => {
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
-        } else if (!this.isEdit) {
-            this.baseService
-                .post(Apiurl.waterEntryList, this.waterEntryForm.value)
-                .subscribe(
-                    (res: any) => {
-                        if (res) {
-                            this.toastService.showToastMessage(
-                                res.message,
-                                'success-style'
-                            );
-                            this.dialog.closeAll();
-                            this.getAllEntryList();
-                        }
-                    },
-                    (error) => {
-                        console.log('error: ', error);
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
-        }
+        const APIURL = this.isEdit
+            ? Apiurl.organizationList + this.id
+            : Apiurl.organizationList;
+        const formData = new FormData();
+        const formValues = {
+            Name: this.organizationForm.value.Name,
+            LanguageId: this.organizationForm.value.LanguageId,
+            DivingMode: this.organizationForm.value.DivingMode,
+            Active: this.activeFile,
+            InActive: this.inActiveFile,
+        };
+        Object.entries(formValues).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        this.baseService.post(APIURL, formData).subscribe(
+            (res: any) => {
+                if (res) {
+                    this.toastService.showToastMessage(
+                        res.message,
+                        'success-style'
+                    );
+                    this.dialog.closeAll();
+                    this.getOrganizationList();
+                }
+            },
+            (error) => {
+                // Handle errors
+                this.toastService.showToastMessage(error, 'error-style');
+            }
+        );
     }
     /**
      * method for delete selected record
@@ -250,15 +278,15 @@ Public methods
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Water Entries',
-                message: 'Are you sure you want to delete this water entry ?',
+                title: 'Organizations',
+                message: 'Are you sure you want to delete this Organization?',
             },
             width: '30%',
         });
         confirmation.afterClosed().subscribe((dialogResult) => {
             if (dialogResult === true) {
                 // this.spinnerService.show();
-                this.baseService.delete(Apiurl.waterEntryList + id).subscribe(
+                this.baseService.delete(Apiurl.organizationList + id).subscribe(
                     (response: any) => {
                         if (response) {
                             // this.spinnerService.show();
@@ -266,7 +294,7 @@ Public methods
                                 response.message,
                                 'success-style'
                             );
-                            this.getAllEntryList();
+                            this.getOrganizationList();
                         } else {
                             this.toastService.showToastMessage(
                                 response.message,
@@ -284,5 +312,55 @@ Public methods
                 );
             }
         });
+    }
+    /***
+     * method for set the active selected file
+     */
+    onActiveFileSelected(event) {
+        const reader = new FileReader();
+        const file = event.target.files[0];
+        if (
+            file.type === 'image/jpeg' ||
+            file.type === 'image/png' ||
+            file.type === 'image/jpg'
+        ) {
+            if (file) reader.readAsDataURL(file); // read file as data url
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+            reader.onload = () => {
+                // called once readAsDataURL is completed
+                this.activeImage = reader.result;
+            };
+            this.activeFile = file;
+        } else {
+            this.toastService.showToastMessage(
+                'Please select Image Extention .jpg .Jpeg .png format',
+                'error-style'
+            );
+        }
+    }
+    /**
+     * method for set the in active selected file
+     */
+    onInActiveFileSelected(event) {
+        const reader = new FileReader();
+        const file = event.target.files[0];
+        if (
+            file.type === 'image/jpeg' ||
+            file.type === 'image/png' ||
+            file.type === 'image/jpg'
+        ) {
+            if (file) reader.readAsDataURL(file); // read file as data url
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+            reader.onload = () => {
+                // called once readAsDataURL is completed
+                this.inActiveImage = reader.result;
+            };
+            this.inActiveFile = file;
+        } else {
+            this.toastService.showToastMessage(
+                'Please select Image Extention .jpg .Jpeg .png format',
+                'error-style'
+            );
+        }
     }
 }
