@@ -39,7 +39,7 @@ export class NationsComponent implements OnInit {
     Nationform: FormGroup;
     submitted = false;
     selectedFile: any = [];
-    imageFile
+    imageFile;
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -83,9 +83,8 @@ export class NationsComponent implements OnInit {
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.nationsList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.nationsList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
                     this.dataSource.data = response.data.nations;
@@ -100,19 +99,25 @@ export class NationsComponent implements OnInit {
                         'error-style'
                     );
                 }
-            }, (error) => {
+            },
+            (error) => {
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.getNationList();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
-            });
+            }
+        );
     }
 
     /**
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = ['id', 'Nation', 'NationCode','ImageUrl', 'action'];
+        this.columns = ['id', 'Nation', 'NationCode', 'ImageUrl', 'action'];
     }
 
     /*---------------------------------
@@ -159,7 +164,7 @@ export class NationsComponent implements OnInit {
         this.id = data.id;
         this.Nationform.controls.Nation.setValue(data.Nation);
         this.Nationform.controls.NationCode.setValue(data.NationCode);
-        this.imageFile =  data.ImageUrl
+        this.imageFile = data.ImageUrl;
     }
     /**
      * input method for search the data
@@ -200,9 +205,17 @@ export class NationsComponent implements OnInit {
      */
     saveForm() {
         this.submitted = true;
-        if (!this.Nationform.valid ||
-            (!this.isEdit && this.selectedFile == null)) {
-            return this.toastService.showToastMessage('All fields are mandatory', 'error-style');
+        if (!this.Nationform.valid) {
+            return;
+        }
+        if (
+            !this.Nationform.valid ||
+            (!this.isEdit && this.selectedFile == null)
+        ) {
+            return this.toastService.showToastMessage(
+                'Please fill out the form correctly',
+                'error-style'
+            );
         }
         const formData = new FormData();
         const formValues = {
@@ -276,7 +289,7 @@ export class NationsComponent implements OnInit {
     }
     /**
      * method for set the selected file
-     * @param event 
+     * @param event
      */
     onFileSelected(event) {
         const reader = new FileReader();

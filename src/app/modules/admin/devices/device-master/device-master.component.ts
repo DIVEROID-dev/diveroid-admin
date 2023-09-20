@@ -8,6 +8,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonDeleteModalComponent } from 'app/shared/common-delete-modal/common-delete-modal.component';
 import { Apiurl } from 'app/shared/route';
 import { BaseService } from 'app/shared/service/base.service';
@@ -36,7 +37,7 @@ export class DeviceMasterComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    categoryform: FormGroup;
+    deviceMasterForm: FormGroup;
     submitted = false;
     selectedFile: any = [];
     imageProfile;
@@ -47,7 +48,7 @@ export class DeviceMasterComponent implements OnInit {
         private toastService: ToastService,
         public dialog: MatDialog,
         private fb: FormBuilder,
-        private loader: LoaderService
+        private loader: LoaderService,
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
@@ -106,6 +107,10 @@ export class DeviceMasterComponent implements OnInit {
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.getAllDeviceList();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
         );
@@ -139,7 +144,7 @@ Public methods
      * define form
      */
     defineForm() {
-        this.categoryform = this.fb.group({
+        this.deviceMasterForm = this.fb.group({
             DeviceName: [
                 '',
                 [Validators.required, Validators.pattern(/^\S.*$/)],
@@ -148,7 +153,7 @@ Public methods
                 '',
                 [Validators.required, Validators.pattern(/^\S.*$/)],
             ],
-            DeviceCategoryId: [''],
+            DeviceCategoryId: ['',[Validators.required]],
         });
     }
 
@@ -178,9 +183,9 @@ Public methods
      */
     setFormValue(data: any) {
         this.id = data.id;
-        this.categoryform.controls.DeviceName.setValue(data.DeviceName);
-        this.categoryform.controls.DeviceSerial.setValue(data.DeviceSerial);
-        this.categoryform.controls.DeviceCategoryId.setValue(
+        this.deviceMasterForm.controls.DeviceName.setValue(data.DeviceName);
+        this.deviceMasterForm.controls.DeviceSerial.setValue(data.DeviceSerial);
+        this.deviceMasterForm.controls.DeviceCategoryId.setValue(
             data.DeviceCategoryId
         );
         this.imageProfile = data.DeviceThumb;
@@ -224,20 +229,14 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
-        if (
-            !this.categoryform.valid ||
-            (!this.isEdit && this.selectedFile == null)
-        ) {
-            return this.toastService.showToastMessage(
-                'Please fill all the fields properly',
-                'error-style'
-            );
+        if (!this.deviceMasterForm.valid) {
+            return;
         }
         const formData = new FormData();
         const formValues = {
-            DeviceCategoryId: this.categoryform.value.DeviceCategoryId,
-            DeviceName: this.categoryform.value.DeviceName,
-            DeviceSerial: this.categoryform.value.DeviceSerial,
+            DeviceCategoryId: this.deviceMasterForm.value.DeviceCategoryId,
+            DeviceName: this.deviceMasterForm.value.DeviceName,
+            DeviceSerial: this.deviceMasterForm.value.DeviceSerial,
             file: this.selectedFile,
         };
         Object.entries(formValues).forEach(([key, value]) => {

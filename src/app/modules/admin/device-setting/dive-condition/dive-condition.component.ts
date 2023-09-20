@@ -8,7 +8,6 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
 import { CommonDeleteModalComponent } from 'app/shared/common-delete-modal/common-delete-modal.component';
 import { Apiurl } from 'app/shared/route';
 import { BaseService } from 'app/shared/service/base.service';
@@ -18,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-water-types',
-    templateUrl: './water-types.component.html',
-    styleUrls: ['./water-types.component.scss'],
+    selector: 'app-dive-condition',
+    templateUrl: './dive-condition.component.html',
+    styleUrls: ['./dive-condition.component.scss'],
 })
-export class WaterTypesComponent implements OnInit {
+export class DiveConditionComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -37,9 +36,9 @@ export class WaterTypesComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    waterTypeForm: FormGroup;
+    diveConditionForm: FormGroup;
     submitted = false;
-    activeFile: any='mat_outline:file_upload';
+    activeFile: any = 'mat_outline:file_upload';
     inActiveFile: any;
     activeImage;
     inActiveImage;
@@ -52,7 +51,7 @@ export class WaterTypesComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllWaterTypeList());
+            .subscribe(() => this.getAllDiveConditionList());
     }
 
     ngOnInit(): void {
@@ -62,27 +61,27 @@ export class WaterTypesComponent implements OnInit {
     }
 
     /*---------------------------------
-  Private  methods
-  -----------------------------------*/
+Private  methods
+-----------------------------------*/
 
     /**
      * Method to initialize data
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllWaterTypeList();
+        this.getAllDiveConditionList();
     }
 
     /**
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = ['id', 'Type', 'ActiveThumb', 'InActiveThumb', 'action'];
+        this.columns = ['id', 'Name', 'ActiveThumb', 'InActiveThumb', 'action'];
     }
     /***
-     * method for get all listing data 
+     * method for get all listing data
      */
-    getAllWaterTypeList() {
+    getAllDiveConditionList() {
         this.loader.showLoader();
         const params = {
             index: this.pageIndex + 1,
@@ -96,12 +95,11 @@ export class WaterTypesComponent implements OnInit {
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.waterTypesList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.diveConditionList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.waterType;
+                    this.dataSource.data = response.data.diveCondition;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -113,16 +111,18 @@ export class WaterTypesComponent implements OnInit {
                         'error-style'
                     );
                 }
-            }, (error) => {
+            },
+            (error) => {
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
                 if (this.pageIndex !== 0) {
                     this.pageIndex = 0;
-                    this.getAllWaterTypeList();
+                    this.getAllDiveConditionList();
                 }
                 // this.toastService.showToastMessage(error, 'error-style');
-            });
+            }
+        );
     }
     /*---------------------------------
 Public methods
@@ -132,8 +132,8 @@ Public methods
      * method for define form
      */
     defineForm() {
-        this.waterTypeForm = this.fb.group({
-            Type: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+        this.diveConditionForm = this.fb.group({
+            Name: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
         });
     }
 
@@ -142,7 +142,7 @@ Public methods
      */
     setFormValue(data: any) {
         this.id = data.id;
-        this.waterTypeForm.controls.Type.setValue(data.Type);
+        this.diveConditionForm.controls.Name.setValue(data.Name);
         this.activeImage = data?.ActiveThumb;
         this.inActiveImage = data?.InActiveThumb;
     }
@@ -168,7 +168,7 @@ Public methods
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllWaterTypeList();
+        this.getAllDiveConditionList();
     }
 
     /**
@@ -186,7 +186,7 @@ Public methods
         this.submitted = false;
         this.dialog.open(templateRef, {
             disableClose: true,
-            width: '40%',
+            width: '33%',
             height: '50%',
         });
         if (this.isEdit) {
@@ -201,7 +201,7 @@ Public methods
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getAllWaterTypeList();
+        this.getAllDiveConditionList();
     }
 
     /***
@@ -209,19 +209,25 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
-        if(!this.waterTypeForm.valid){
-            return
+        if (!this.diveConditionForm.valid) {
+            return;
         }
-        if (!this.waterTypeForm.valid ||
-            (!this.isEdit && (this.activeFile == null || this.inActiveFile == null))) {
-                return this.toastService.showToastMessage('Please fill out the form correctly', 'error-style');
+        if (
+            !this.diveConditionForm.valid ||
+            (!this.isEdit &&
+                (this.activeFile == null || this.inActiveFile == null))
+        ) {
+            return this.toastService.showToastMessage(
+                'Please fill out the form correctly',
+                'error-style'
+            );
         }
         const APIURL = this.isEdit
-            ? Apiurl.waterTypesList + this.id
-            : Apiurl.waterTypesList;
+            ? Apiurl.diveConditionList + this.id
+            : Apiurl.diveConditionList;
         const formData = new FormData();
         const formValues = {
-            Type: this.waterTypeForm.value.Type,
+            Name: this.diveConditionForm.value.Name,
             Active: this.activeFile,
             InActive: this.inActiveFile,
         };
@@ -236,8 +242,7 @@ Public methods
                         'success-style'
                     );
                     this.dialog.closeAll();
-                    this.getAllWaterTypeList();
-                    
+                    this.getAllDiveConditionList();
                 }
             },
             (error) => {
@@ -252,38 +257,40 @@ Public methods
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Water Types',
-                message: 'Are you sure you want to delete this water type?',
+                title: 'Dive Conditions',
+                message: 'Are you sure you want to delete this dive condition?',
             },
             width: '30%',
         });
         confirmation.afterClosed().subscribe((dialogResult) => {
             if (dialogResult === true) {
                 // this.spinnerService.show();
-                this.baseService.delete(Apiurl.waterTypesList + id).subscribe(
-                    (response: any) => {
-                        if (response) {
-                            // this.spinnerService.show();
+                this.baseService
+                    .delete(Apiurl.diveConditionList + id)
+                    .subscribe(
+                        (response: any) => {
+                            if (response) {
+                                // this.spinnerService.show();
+                                this.toastService.showToastMessage(
+                                    response.message,
+                                    'success-style'
+                                );
+                                this.getAllDiveConditionList();
+                            } else {
+                                this.toastService.showToastMessage(
+                                    response.message,
+                                    'error-style'
+                                );
+                            }
+                        },
+                        (error) => {
+                            // Handle errors
                             this.toastService.showToastMessage(
-                                response.message,
-                                'success-style'
-                            );
-                            this.getAllWaterTypeList();
-                        } else {
-                            this.toastService.showToastMessage(
-                                response.message,
+                                error,
                                 'error-style'
                             );
                         }
-                    },
-                    (error) => {
-                        // Handle errors
-                        this.toastService.showToastMessage(
-                            error,
-                            'error-style'
-                        );
-                    }
-                );
+                    );
             }
         });
     }
@@ -336,5 +343,14 @@ Public methods
                 'error-style'
             );
         }
+    }
+    isHovered: boolean = false;
+
+    onMouseEnter() {
+        this.isHovered = true;
+    }
+
+    onMouseLeave() {
+        this.isHovered = false;
     }
 }

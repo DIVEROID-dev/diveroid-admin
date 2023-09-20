@@ -38,7 +38,7 @@ export class OrganizationComponent implements OnInit {
     id: any;
     organizationForm: FormGroup;
     submitted = false;
-    activeFile: any ;
+    activeFile: any;
     inActiveFile: any;
     activeImage;
     inActiveImage;
@@ -105,9 +105,8 @@ Private  methods
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.organizationList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.organizationList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
                     this.dataSource.data = response.data.Organization;
@@ -127,6 +126,10 @@ Private  methods
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.getOrganizationList();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
         );
@@ -141,8 +144,8 @@ Public methods
     defineForm() {
         this.organizationForm = this.fb.group({
             Name: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
-            LanguageId: ['',[Validators.required]],
-            DivingMode: ['',[Validators.required]],
+            LanguageId: ['', [Validators.required]],
+            DivingMode: ['', [Validators.required]],
         });
     }
 
@@ -223,7 +226,7 @@ Public methods
             if (res) this.languageList = res.data.languages;
         });
         this.baseService.get(Apiurl.divingModes).subscribe((res: any) => {
-            if(res) this.divingModeList = res.data.divingModes
+            if (res) this.divingModeList = res.data.divingModes;
         });
     }
     /***
@@ -231,13 +234,16 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
+        if (!this.organizationForm.valid) {
+            return;
+        }
         if (
             !this.organizationForm.valid ||
             (!this.isEdit &&
                 (this.activeFile == null || this.inActiveFile == null))
         ) {
             return this.toastService.showToastMessage(
-                'All fields are mandatory',
+                'Please fill out the form correctly',
                 'error-style'
             );
         }

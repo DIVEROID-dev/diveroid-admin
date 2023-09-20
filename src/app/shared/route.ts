@@ -88,6 +88,20 @@ export const Apiurl = {
     activityMedalsList: 'admin/activityMedal/',
     
     /**
+     * device setting module
+     */
+    //dive condition api
+    diveConditionList: 'admin/diveCondition/',
+
+    //oxygen percentage api
+    oxygenPercentageList: 'admin/oxygenPercentage/',
+
+    //po2 percentage api
+    po2PercentageList: 'admin/po2Percentage/',
+
+    //water depth api
+    waterDepthList: 'admin/waterDepth/',
+    /**
      * static api
      */
     // static device list

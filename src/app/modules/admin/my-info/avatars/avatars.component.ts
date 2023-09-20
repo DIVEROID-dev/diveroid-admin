@@ -122,6 +122,10 @@ Private  methods
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.getAllAvatar();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
         );
@@ -208,12 +212,15 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
+        if (!this.avatarForm.valid) {
+            return;
+        }
         if (
             !this.avatarForm.valid ||
             (!this.isEdit && this.selectedFile == null)
         ) {
             return this.toastService.showToastMessage(
-                'All fields are mandatory',
+                'Please fill out the form correctly',
                 'error-style'
             );
         }

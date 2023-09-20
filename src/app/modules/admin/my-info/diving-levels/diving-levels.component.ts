@@ -117,6 +117,10 @@ Private  methods
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.getDivingLevels();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
         );
@@ -221,10 +225,7 @@ Public methods
     saveForm() {
         this.submitted = true;
         if (!this.divingLevelForm.valid) {
-            return this.toastService.showToastMessage(
-                'All fields are mandatory',
-                'error-style'
-            );
+            return;
         }
         if (this.isEdit) {
             this.baseService

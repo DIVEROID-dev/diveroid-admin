@@ -105,6 +105,10 @@ export class DeviceCategoriesComponent implements OnInit {
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.getAllDeviceList();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
         );
@@ -119,7 +123,6 @@ export class DeviceCategoriesComponent implements OnInit {
             'DeviceCategoryName',
             'DeviceCategoryThumb',
             'WarrantyYear',
-            'IsEnabled',
             'action',
         ];
     }
@@ -145,7 +148,7 @@ Public methods
                 '',
                 [Validators.required, Validators.max(99), Validators.min(1)],
             ],
-            parentId: [0],
+            parentId: [0,[Validators.required]],
         });
     }
 
@@ -221,12 +224,15 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
+        if (!this.categoryform.valid) {
+            return;
+        }
         if (
             !this.categoryform.valid ||
             (!this.isEdit && this.selectedFile == null)
         ) {
             return this.toastService.showToastMessage(
-                'Please fill all the fields properly',
+                'Please fill out the form correctly',
                 'error-style'
             );
         }
@@ -329,6 +335,15 @@ Public methods
                 'Please select Image Extention .jpg .Jpeg .png format',
                 'error-style'
             );
+        }
+    }
+    /***
+     * method for accept only numbers
+     */
+    keyPress(event: KeyboardEvent): void {
+        const disallowedKeys = ['e', 'E', '+', '-','.'];
+        if (disallowedKeys.includes(event.key)) {
+            event.preventDefault();
         }
     }
 }

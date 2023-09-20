@@ -86,7 +86,7 @@
 
             <ng-container matColumnDef="MinReviews">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    <span>MinReviews
+                    <span>Min Reviews
                     </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
@@ -144,7 +144,7 @@
                     <div class="w-1/2 ">
                         <mat-form-field appearance="outline" class="example-full-width">
                             <mat-label>Min Reviews <span class="required-field"> *</span></mat-label>
-                            <input type="number" matInput formControlName="MinReviews" placeholder="Enter Min Reviews">
+                            <input type="number" [min]="0" [step]="0" matInput formControlName="MinReviews" placeholder="Enter Min Reviews" (keypress)="keyPress($event)">
                             <mat-error *ngIf=" activityMedalForm.controls['MinReviews'].hasError('required')">
                                 Please enter min reviews
                             </mat-error>
@@ -156,7 +156,7 @@
                     <div class="w-1/2 ">
                         <mat-form-field appearance="outline" class="example-full-width">
                             <mat-label>Max Reviews <span class="required-field"> *</span></mat-label>
-                            <input type="number" matInput formControlName="MaxReviews" placeholder="Enter Max Reviews">
+                            <input type="number" matInput formControlName="MaxReviews" placeholder="Enter Max Reviews" [min]="1" [step]="1" (keypress)="keyPress($event)">
                             <mat-error *ngIf=" activityMedalForm.controls['MaxReviews'].hasError('required')">
                                 Please enter max reviews
                             </mat-error>
@@ -171,7 +171,7 @@
                     <div class="w-1/2 ">
                         <mat-form-field appearance="outline" class="example-full-width">
                             <mat-label>Min Likes <span class="required-field"> *</span></mat-label>
-                            <input type="number" matInput formControlName="MinLikes" placeholder="Enter Min Likes">
+                            <input type="number" matInput formControlName="MinLikes" placeholder="Enter Min Likes" [min]="0" [step]="0" (keypress)="keyPress($event)">
                             <mat-error *ngIf=" activityMedalForm.controls['MinLikes'].hasError('required')">
                                 Please enter min likes
                             </mat-error>
@@ -183,8 +183,7 @@
                     <div class="w-1/2 ">
                         <mat-form-field appearance="outline" class="example-full-width">
                             <mat-label>Max Likes <span class="required-field"> *</span></mat-label>
-                            <input type="number" matInput formControlName="MaxLikes" placeholder="Enter Max Likes"
-                                [pattern]="'^[1-9][0-9]*$'">
+                            <input type="number" [min]="1" [step]="1" matInput formControlName="MaxLikes" placeholder="Enter Max Likes" (keypress)="keyPress($event)">
                             <mat-error *ngIf=" activityMedalForm.controls['MaxLikes'].hasError('required')">
                                 Please enter max likes
                             </mat-error>

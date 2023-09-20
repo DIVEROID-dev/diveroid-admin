@@ -213,4 +213,41 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
+    {
+        id: 'device-settings',
+        title: 'Device Settings',
+        type: 'collapsable',
+        icon: 'mat_outline:app_settings_alt',
+        link: 'device-settings',
+        children: [
+            {
+                id: 'device-settings/dive-condition',
+                title: 'Dive Conditions',
+                type: 'basic',
+                icon: 'heroicons_outline:shield-check',
+                link: 'device-settings/dive-condition',
+            },
+            {
+                id: 'device-settings/oxygen-percentage',
+                title: 'Oxygen Percentage',
+                type: 'basic',
+                icon: 'mat_outline:invert_colors',
+                link: 'device-settings/oxygen-percentage',
+            },
+            {
+                id: 'device-settings/po2-percentage',
+                title: 'PO2 Percentage',
+                type: 'basic',
+                icon: 'mat_outline:data_usage',
+                link: 'device-settings/po2-percentage',
+            },
+            {
+                id: 'device-settings/water-depth',
+                title: 'Water Depth',
+                type: 'basic',
+                icon: 'mat_outline:shutter_speed',
+                link: 'device-settings/water-depth',
+            },
+        ],
+    },
 ];

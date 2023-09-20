@@ -17,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-diving-modes',
-    templateUrl: './diving-modes.component.html',
-    styleUrls: ['./diving-modes.component.scss'],
+    selector: 'app-water-depth',
+    templateUrl: './water-depth.component.html',
+    styleUrls: ['./water-depth.component.scss'],
 })
-export class DivingModesComponent implements OnInit {
+export class WaterDepthComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,8 +36,9 @@ export class DivingModesComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    divingModeForm: FormGroup;
+    waterDepthForm: FormGroup;
     submitted = false;
+
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -47,7 +48,7 @@ export class DivingModesComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllDivingModes());
+            .subscribe(() => this.getWaterDepthList());
     }
 
     ngOnInit(): void {
@@ -55,28 +56,18 @@ export class DivingModesComponent implements OnInit {
         this.dataInitializer();
         this.defineForm();
     }
-    /*---------------------------------
-  Private  methods
-  -----------------------------------*/
 
     /**
      * Method to initialize data
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllDivingModes();
+        this.getWaterDepthList();
     }
 
     /**
-     * Method to initialize Columns field
-     */
-    private initColumns(): void {
-        this.columns = ['id', 'Name', 'action'];
-    }
-    /***
-     * method for get all listing data
-     */
-    getAllDivingModes() {
+     * Method to get and set all data to data source   */
+    private getWaterDepthList(): void {
         this.loader.showLoader();
         const params = {
             index: this.pageIndex + 1,
@@ -90,12 +81,11 @@ export class DivingModesComponent implements OnInit {
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.divingModeList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.waterDepthList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.divingMode;
+                    this.dataSource.data = response.data.waterDepths;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -107,38 +97,69 @@ export class DivingModesComponent implements OnInit {
                         'error-style'
                     );
                 }
-            }, (error) => {
+            },
+            (error) => {
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
                 if (this.pageIndex !== 0) {
                     this.pageIndex = 0;
-                    this.getAllDivingModes();
+                    this.getWaterDepthList();
                 }
                 // this.toastService.showToastMessage(error, 'error-style');
-            });
+            }
+        );
     }
+
+    /**
+     * Method to initialize Columns field
+     */
+    private initColumns(): void {
+        this.columns = ['id', 'MinValue', 'MaxValue', 'Interval', 'action'];
+    }
+
     /*---------------------------------
 Public methods
 -----------------------------------*/
 
     /**
-     * method for define form
+     * define form
      */
     defineForm() {
-        this.divingModeForm = this.fb.group({
-            Name: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+        this.waterDepthForm = this.fb.group({
+            MinValue: ['', [Validators.required, Validators.min(0)]],
+            MaxValue: ['', [Validators.required, Validators.min(0)]],
+            Interval: ['', [Validators.required, Validators.min(0)]],
         });
     }
 
     /**
-     * update time set the form value
+     *
+     *method for open dialog box
+     */
+    openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
+        this.id = null;
+        this.defineForm();
+        this.isEdit = isEdit;
+        this.submitted = false;
+        this.dialog.open(templateRef, {
+            disableClose: true,
+            width: '28%',
+            height: '33%',
+        });
+        if (this.isEdit) {
+            this.setFormValue(data);
+        }
+    }
+    /**
+     * update time set the form value to form control
      */
     setFormValue(data: any) {
         this.id = data.id;
-        this.divingModeForm.controls.Name.setValue(data.Name);
+        this.waterDepthForm.controls.MinValue.setValue(data.MinValue);
+        this.waterDepthForm.controls.MaxValue.setValue(data.MaxValue);
+        this.waterDepthForm.controls.Interval.setValue(data.Interval);
     }
-
     /**
      * input method for search the data
      * @param event set the event
@@ -155,54 +176,35 @@ Public methods
         this.searchUpdater.next(this.filter.nativeElement.value);
     }
     /**
+     * method for get data when page size is chnage
+     * @param event
+     */
+
+    pageChanged(event: PageEvent): void {
+        this.pageSize = event.pageSize;
+        this.pageIndex = event.pageIndex;
+        this.getWaterDepthList();
+    }
+    /**
      * Method for sorting data
      */
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllDivingModes();
+        this.getWaterDepthList();
     }
-
     /**
-     *
-     *method for open dialog box
-     */
-    openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
-        this.id = null;
-        this.defineForm();
-        this.isEdit = isEdit;
-        this.submitted = false;
-        this.dialog.open(templateRef, {
-            disableClose: true,
-            width: '22%',
-            height: '26%',
-        });
-        if (this.isEdit) {
-            this.setFormValue(data);
-        }
-    }
-
-    /**
-     * method for change page
-     * @param event
-     */
-    pageChanged(event: PageEvent): void {
-        this.pageSize = event.pageSize;
-        this.pageIndex = event.pageIndex;
-        this.getAllDivingModes();
-    }
-
-    /***
      * method for save form
+     * @returns if form is not valid
      */
     saveForm() {
         this.submitted = true;
-        if (!this.divingModeForm.valid) {
+        if (!this.waterDepthForm.valid) {
             return;
         }
         if (this.isEdit) {
             this.baseService
-                .put(Apiurl.divingModeList + this.id, this.divingModeForm.value)
+                .put(Apiurl.waterDepthList + this.id, this.waterDepthForm.value)
                 .subscribe(
                     (res: any) => {
                         if (res) {
@@ -211,7 +213,7 @@ Public methods
                                 'success-style'
                             );
                             this.dialog.closeAll();
-                            this.getAllDivingModes();
+                            this.getWaterDepthList();
                         }
                     },
                     (error) => {
@@ -224,7 +226,7 @@ Public methods
                 );
         } else if (!this.isEdit) {
             this.baseService
-                .post(Apiurl.divingModeList, this.divingModeForm.value)
+                .post(Apiurl.waterDepthList, this.waterDepthForm.value)
                 .subscribe(
                     (res: any) => {
                         if (res) {
@@ -233,11 +235,10 @@ Public methods
                                 'success-style'
                             );
                             this.dialog.closeAll();
-                            this.getAllDivingModes();
+                            this.getWaterDepthList();
                         }
                     },
                     (error) => {
-                        console.log('error: ', error);
                         // Handle errors
                         this.toastService.showToastMessage(
                             error,
@@ -253,15 +254,15 @@ Public methods
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Diving Modes',
-                message: 'Are you sure you want to delete this diving mode?',
+                title: 'Water Depth',
+                message: 'Are you sure you want to delete this water-depth?',
             },
             width: '30%',
         });
         confirmation.afterClosed().subscribe((dialogResult) => {
             if (dialogResult === true) {
                 // this.spinnerService.show();
-                this.baseService.delete(Apiurl.divingModeList + id).subscribe(
+                this.baseService.delete(Apiurl.waterDepthList + id).subscribe(
                     (response: any) => {
                         if (response) {
                             // this.spinnerService.show();
@@ -269,7 +270,7 @@ Public methods
                                 response.message,
                                 'success-style'
                             );
-                            this.getAllDivingModes();
+                            this.getWaterDepthList();
                         } else {
                             this.toastService.showToastMessage(
                                 response.message,
@@ -287,5 +288,14 @@ Public methods
                 );
             }
         });
+    }
+    /***
+     * method for accept only numbers
+     */
+    keyPress(event: KeyboardEvent): void {
+        const disallowedKeys = ['e', 'E', '+', '-', '.'];
+        if (disallowedKeys.includes(event.key)) {
+            event.preventDefault();
+        }
     }
 }

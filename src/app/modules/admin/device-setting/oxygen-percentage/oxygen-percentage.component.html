@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center
         sm:justify-between">
         <div class="flex flex-row mb-2 justify-between w-full">
-            <div class="text-4xl pl-5 font-semibold">Languages</div>
+            <div class="text-4xl pl-5 font-semibold">Oxygen Percentage</div>
         </div>
     </div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center
@@ -12,15 +12,16 @@
             <mat-form-field class="fuse-mat-rounded fuse-mat-dense
                 fuse-mat-no-subscript flex-auto ml-4 mr-5 lg:ml-0">
                 <mat-icon class="icon-size-5" svgIcon="heroicons_solid:search" matPrefix></mat-icon>
-                <mat-icon svgIcon="heroicons_outline:x" matSuffix *ngIf="searchText.value"  (click)="cancelSearch()"></mat-icon>
+                <mat-icon svgIcon="heroicons_outline:x" matSuffix *ngIf="searchText.value"
+                    (click)="cancelSearch()"></mat-icon>
                 <input matInput [autocomplete]="'off'" placeholder="Search" [formControl]="searchText" #filter
                     (input)="onSerach($event)">
             </mat-form-field>
         </div>
         <div class="mt-4 sm:mt-0">
-            <button mat-flat-button color="primary" (click)="openDialog(languageModal,false)" matTooltip="Add Language">
+            <button mat-flat-button color="primary" (click)="openDialog(oxygenModal,false)" matTooltip="Add Oxygen Percentage">
                 <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
-                <span class="ml-2 mr-1">Add Language</span>
+                <span class="ml-2 mr-1">Add Oxygen Percentage</span>
             </button>
         </div>
     </div>
@@ -37,33 +38,33 @@
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="Language">
+            <ng-container matColumnDef="MinValue">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    <span> Language </span>
+                    <span> Min Value </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
                     <span>
-                        {{element.Language
+                        {{element.MinValue
                         }}
                     </span>
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="LanguageCode">
+            <ng-container matColumnDef="MaxValue">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    <span> Language Code </span>
+                    <span> Max Value </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element.LanguageCode}}
+                    {{element.MaxValue}}
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="NativeLanguage">
+            <ng-container matColumnDef="Interval">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    <span> Native Language </span>
+                    <span> Interval </span>
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{element.NativeLanguage}}
+                    {{element.Interval}}
                 </td>
             </ng-container>
 
@@ -74,11 +75,11 @@
                 </th>
                 <td mat-cell *matCellDef="let element">
                     <div class="flex flex-row py-2 justify-center gap-2">
-                        <div class="" (click)="openDialog(languageModal,true,element)">
+                        <div class="" (click)="openDialog(oxygenModal,true,element)">
                             <mat-icon class="icon-size-7 text-green-500
                                 cursor-pointer" matTooltip="Update" [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
                         </div>
-                        <div class="" (click)="deleteLanguage(element.id)">
+                        <div class="" (click)="deleteRecord(element.id)">
                             <mat-icon class="icon-size-7 text-red-500
                                 cursor-pointer" matTooltip="Delete" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
                         </div>
@@ -104,47 +105,53 @@
     </div>
 </div>
 <!-- Add or update dialog Box -->
-<ng-template let-data #languageModal>
+<ng-template let-data #oxygenModal>
     <div class="form-container">
-        <h1 class="mat-dialog-title text-center">{{!isEdit?'Add':'Update'}} Language</h1>
+        <h1 class="mat-dialog-title text-center">{{!isEdit?'Add':'Update'}} Oxygen Percentage</h1>
         <div class="mat-dialog-content">
 
             <!-- Form Group language -->
-            <form [formGroup]="languageForm" (ngSubmit)="saveLanguageForm()">
+            <form [formGroup]="oxygenForm" (ngSubmit)="saveForm()">
+                <div class="flex space-x-4">
+                    <div class="w-1/2 ">
+                        <mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label>Min Value<span class="required-field"> *</span></mat-label>
+                            <input type="number" matInput formControlName="MinValue" placeholder="Enter Min Value" [min]="0" [step]="0" (keypress)="keyPress($event)">
+                            <mat-error *ngIf=" oxygenForm.controls['MinValue'].hasError('required')">
+                                Please enter min value
+                            </mat-error>
+                            <mat-error *ngIf="oxygenForm.controls['MinValue'].hasError('min')">
+                                Please enter valid min value
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="w-1/2 ">
+                        <mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label>Max Value <span class="required-field"> *</span></mat-label>
+                            <input type="number" matInput formControlName="MaxValue" placeholder="Enter Max Value" [min]="0" [step]="0" (keypress)="keyPress($event)">
+                            <mat-error *ngIf=" oxygenForm.controls['MaxValue'].hasError('required')">
+                                Please enter max value
+                            </mat-error>
+                            <mat-error *ngIf="oxygenForm.controls['MaxValue'].hasError('min')">
+                                Please enter valid max value
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                </div>
+                <div>
                     <mat-form-field appearance="outline" class="example-full-width">
-                        <!-- Language  field  -->
-                        <mat-label>Language<span class="required-field"> *</span></mat-label>
-                        <input type="text" matInput formControlName="Language" placeholder="Enter Language" autocomplete="off"
-                           [maxlength]="50">
-                        <mat-error *ngIf=" languageForm.controls['Language'].hasError('required')">
-                            Please enter language.
+                        <mat-label>Interval <span class="required-field"> *</span></mat-label>
+                        <input type="number" matInput formControlName="Interval" placeholder="Enter Interval" [min]="0" [step]="0" (keypress)="keyPress($event)">
+                        <mat-error *ngIf=" oxygenForm.controls['Interval'].hasError('required')">
+                            Please enter interval
                         </mat-error>
-                        <mat-error *ngIf="languageForm.controls['Language'].hasError('pattern')||languageForm.controls['Language'].hasError('maxlength')">
-                            Please enter valid language.
+                        <mat-error *ngIf="oxygenForm.controls['Interval'].hasError('min')">
+                            Please enter valid interval
                         </mat-error>
                     </mat-form-field>
-                <mat-form-field appearance="outline" class="example-full-width">
-                    <!-- language code field -->
-                    <mat-label>Language Code<span class="required-field"> *</span></mat-label>
-                    <input type="text" matInput formControlName="LanguageCode" placeholder="Enter Language Code" autocomplete="off"
-                        [maxlength]="15">
-                    <mat-error *ngIf="languageForm.controls['LanguageCode'].hasError('required')">
-                        Please enter language code.
-                    </mat-error>
-                    <mat-error *ngIf="languageForm.controls['LanguageCode'].hasError('pattern')">
-                        Please enter valid language code.
-                    </mat-error>
-                </mat-form-field>
-                <!-- native language field  -->
-                <mat-form-field appearance="outline" class="example-full-width">
-                    <mat-label>Native Language<span class="required-field"> *</span></mat-label>
-                    <input class="form-control" placeholder="Enter Native Language" type="text" name="NativeLanguage" [maxlength]="50" autocomplete="off"
-                        matInput formControlName="NativeLanguage" />
-                    <mat-error *ngIf="languageForm.controls['NativeLanguage'].hasError('required')"> Please enter native
-                        language.</mat-error>
-                    <mat-error *ngIf="languageForm.controls['NativeLanguage'].hasError('pattern')">Please
-                        enter valid native language.</mat-error>
-                </mat-form-field>
+                </div>
+              
                 <div class="justify-end md:flex gap-2">
                     <button mat-flat-button color="primary"> Submit
                     </button>

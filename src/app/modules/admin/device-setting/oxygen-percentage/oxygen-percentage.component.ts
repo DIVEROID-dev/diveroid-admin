@@ -1,5 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,14 +15,13 @@ import { LoaderService } from 'app/shared/service/loader.service';
 import { ToastService } from 'app/shared/service/toast.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
-    selector: 'app-blacklisted-tokens',
-    templateUrl: './blacklisted-tokens.component.html',
-    styleUrls: ['./blacklisted-tokens.component.scss'],
+    selector: 'app-oxygen-percentage',
+    templateUrl: './oxygen-percentage.component.html',
+    styleUrls: ['./oxygen-percentage.component.scss'],
 })
-export class BlacklistedTokensComponent implements OnInit {
+export class OxygenPercentageComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -30,47 +34,40 @@ export class BlacklistedTokensComponent implements OnInit {
     sortColumn: string = '';
     searchText: FormControl;
     searchUpdater = new Subject<string>();
+    isEdit: boolean = false;
+    id: any;
+    oxygenForm: FormGroup;
     submitted = false;
 
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
         public dialog: MatDialog,
-        private loader: LoaderService,
-        private clipboard: Clipboard
+        private fb: FormBuilder,
+        private loader: LoaderService
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllTokens());
+            .subscribe(() => this.getOxygenList());
     }
 
     ngOnInit(): void {
         this.searchText = new FormControl('');
         this.dataInitializer();
+        this.defineForm();
     }
-    /*---------------------------------
-Private  methods
------------------------------------*/
 
     /**
      * Method to initialize data
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllTokens();
+        this.getOxygenList();
     }
 
     /**
-     * Method to initialize Columns field
-     */
-    private initColumns(): void {
-        this.columns = ['id', 'Name', 'GuestMemberId', 'Token', 'action'];
-    }
-
-    /***
-     * method for get all listing data
-     */
-    getAllTokens() {
+     * Method to get and set all data to data source     */
+    private getOxygenList(): void {
         this.loader.showLoader();
         const params = {
             index: this.pageIndex + 1,
@@ -84,11 +81,11 @@ Private  methods
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService.get(Apiurl.blackListedTokenList, params).subscribe(
+        this.baseService.get(Apiurl.oxygenPercentageList, params).subscribe(
             (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.blacklistedToken;
+                    this.dataSource.data = response.data.oxygenPercentage;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -107,17 +104,62 @@ Private  methods
                 this.paginator.length = 0;
                 if (this.pageIndex !== 0) {
                     this.pageIndex = 0;
-                    this.getAllTokens();
+                    this.getOxygenList();
                 }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
         );
     }
 
-    /*---------------------------------
-Public methods
------------------------------------*/
+    /**
+     * Method to initialize Columns field
+     */
+    private initColumns(): void {
+        this.columns = ['id', 'MinValue', 'MaxValue', 'Interval', 'action'];
+    }
 
+    /*---------------------------------
+  Public methods
+  -----------------------------------*/
+
+    /**
+     * define form
+     */
+    defineForm() {
+        this.oxygenForm = this.fb.group({
+            MinValue: ['', [Validators.required, Validators.min(0)]],
+            MaxValue: ['', [Validators.required, Validators.min(0)]],
+            Interval: ['', [Validators.required, Validators.min(0)]],
+        });
+    }
+
+    /**
+     *
+     *method for open dialog box
+     */
+    openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
+        this.id = null;
+        this.defineForm();
+        this.isEdit = isEdit;
+        this.submitted = false;
+        this.dialog.open(templateRef, {
+            disableClose: true,
+            width: '28%',
+            height: '33%',
+        });
+        if (this.isEdit) {
+            this.setFormValue(data);
+        }
+    }
+    /**
+     * update time set the form value to form control
+     */
+    setFormValue(data: any) {
+        this.id = data.id;
+        this.oxygenForm.controls.MinValue.setValue(data.MinValue);
+        this.oxygenForm.controls.MaxValue.setValue(data.MaxValue);
+        this.oxygenForm.controls.Interval.setValue(data.Interval);
+    }
     /**
      * input method for search the data
      * @param event set the event
@@ -133,35 +175,91 @@ Public methods
         this.searchText.setValue('');
         this.searchUpdater.next(this.filter.nativeElement.value);
     }
+    /**
+     * method for get data when page size is chnage
+     * @param event
+     */
 
+    pageChanged(event: PageEvent): void {
+        this.pageSize = event.pageSize;
+        this.pageIndex = event.pageIndex;
+        this.getOxygenList();
+    }
     /**
      * Method for sorting data
      */
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllTokens();
+        this.getOxygenList();
     }
-
     /**
-     * method for change page
-     * @param event
+     * method for save form
+     * @returns if form is not valid
      */
-    pageChanged(event: PageEvent): void {
-        this.pageSize = event.pageSize;
-        this.pageIndex = event.pageIndex;
-        this.getAllTokens();
+    saveForm() {
+        this.submitted = true;
+        if (!this.oxygenForm.valid) {
+            return;
+        }
+        if (this.isEdit) {
+            this.baseService
+                .put(
+                    Apiurl.oxygenPercentageList + this.id,
+                    this.oxygenForm.value
+                )
+                .subscribe(
+                    (res: any) => {
+                        if (res) {
+                            this.toastService.showToastMessage(
+                                res.message,
+                                'success-style'
+                            );
+                            this.dialog.closeAll();
+                            this.getOxygenList();
+                        }
+                    },
+                    (error) => {
+                        // Handle errors
+                        this.toastService.showToastMessage(
+                            error,
+                            'error-style'
+                        );
+                    }
+                );
+        } else if (!this.isEdit) {
+            this.baseService
+                .post(Apiurl.oxygenPercentageList, this.oxygenForm.value)
+                .subscribe(
+                    (res: any) => {
+                        if (res) {
+                            this.toastService.showToastMessage(
+                                res.message,
+                                'success-style'
+                            );
+                            this.dialog.closeAll();
+                            this.getOxygenList();
+                        }
+                    },
+                    (error) => {
+                        // Handle errors
+                        this.toastService.showToastMessage(
+                            error,
+                            'error-style'
+                        );
+                    }
+                );
+        }
     }
-
     /**
      * method for delete selected record
      */
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Black Listed Tokens',
+                title: 'Oxygen Percentage',
                 message:
-                    'Are you sure you want to delete this black listed token?',
+                    'Are you sure you want to delete this oxygen percentage?',
             },
             width: '30%',
         });
@@ -169,7 +267,7 @@ Public methods
             if (dialogResult === true) {
                 // this.spinnerService.show();
                 this.baseService
-                    .delete(Apiurl.blackListedTokenList + id)
+                    .delete(Apiurl.oxygenPercentageList + id)
                     .subscribe(
                         (response: any) => {
                             if (response) {
@@ -178,7 +276,7 @@ Public methods
                                     response.message,
                                     'success-style'
                                 );
-                                this.getAllTokens();
+                                this.getOxygenList();
                             } else {
                                 this.toastService.showToastMessage(
                                     response.message,
@@ -197,14 +295,13 @@ Public methods
             }
         });
     }
-    /**
-     * method for copy token
+    /***
+     * method for accept only numbers
      */
-    copyToken(token) {
-        this.clipboard.copy(token);
-        this.toastService.showToastMessage(
-            'Token copied to clipboard.',
-            'primary-style'
-        );
+    keyPress(event: KeyboardEvent): void {
+        const disallowedKeys = ['e', 'E', '+', '-', '.'];
+        if (disallowedKeys.includes(event.key)) {
+            event.preventDefault();
+        }
     }
 }

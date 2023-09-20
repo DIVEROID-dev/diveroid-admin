@@ -112,6 +112,10 @@ Private  methods
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.getAllEntryList();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
             });
     }

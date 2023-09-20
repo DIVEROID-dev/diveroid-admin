@@ -103,9 +103,8 @@ Private  methods
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService
-            .get(Apiurl.activityMedalsList, params)
-            .subscribe((response: any) => {
+        this.baseService.get(Apiurl.activityMedalsList, params).subscribe(
+            (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
                     this.dataSource.data = response.data.activityMedal;
@@ -125,6 +124,10 @@ Private  methods
                 // Handle errors
                 this.dataSource.data = [];
                 this.paginator.length = 0;
+                if (this.pageIndex !== 0) {
+                    this.pageIndex = 0;
+                    this.activityMedalsList();
+                }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
         );
@@ -138,22 +141,10 @@ Public methods
      */
     defineForm() {
         this.activityMedalForm = this.fb.group({
-            MinReviews: [
-                '',
-                [Validators.required, Validators.min(1),],
-            ],
-            MaxReviews: [
-                '',
-                [Validators.required, Validators.min(1)],
-            ],
-            MinLikes: [
-                '',
-                [Validators.required, Validators.min(1)],
-            ],
-            MaxLikes: [
-                '',
-                [Validators.required, Validators.min(1)],
-            ],
+            MinReviews: ['', [Validators.required, Validators.min(0)]],
+            MaxReviews: ['', [Validators.required, Validators.min(1)]],
+            MinLikes: ['', [Validators.required, Validators.min(0)]],
+            MaxLikes: ['', [Validators.required, Validators.min(1)]],
         });
     }
 
@@ -229,12 +220,15 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
+        if (!this.activityMedalForm.valid) {
+            return;
+        }
         if (
             !this.activityMedalForm.valid ||
             (!this.isEdit && this.selectedFile == null)
         ) {
             return this.toastService.showToastMessage(
-                'All fields are mandatory',
+                'Please fill out the form correctly',
                 'error-style'
             );
         }
@@ -333,6 +327,15 @@ Public methods
                 'Please select Image Extention .jpg .Jpeg .png format',
                 'error-style'
             );
+        }
+    }
+    /***
+     * method for accept only numbers
+     */
+    keyPress(event: KeyboardEvent): void {
+        const disallowedKeys = ['e', 'E', '+', '-', '.'];
+        if (disallowedKeys.includes(event.key)) {
+            event.preventDefault();
         }
     }
 }
