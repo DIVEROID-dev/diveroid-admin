@@ -15,13 +15,14 @@ import { LoaderService } from 'app/shared/service/loader.service';
 import { ToastService } from 'app/shared/service/toast.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { MonacoEditorConstructionOptions } from '@materia-ui/ngx-monaco-editor';
 
 @Component({
-    selector: 'app-device-categories',
-    templateUrl: './device-categories.component.html',
-    styleUrls: ['./device-categories.component.scss'],
+    selector: 'app-faqs',
+    templateUrl: './faqs.component.html',
+    styleUrls: ['./faqs.component.scss'],
 })
-export class DeviceCategoriesComponent implements OnInit {
+export class FaqsComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,11 +37,19 @@ export class DeviceCategoriesComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    categoryform: FormGroup;
+    faqForm: FormGroup;
     submitted = false;
-    selectedFile: any = [];
-    selectedValue: string;
-    deviceList: any[];
+    languageList: any = [];
+    categoryList: any = [];
+    editorOptions: MonacoEditorConstructionOptions = {
+        theme: 'default',
+        language: 'html',
+        autoClosingBrackets: 'always',
+        ariaLabel: 'Enter Content',
+        roundedSelection: true,
+        autoIndent: 'full',
+    };
+
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -50,9 +59,11 @@ export class DeviceCategoriesComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllDeviceList());
+            .subscribe(() => this.getFAQList());
     }
-
+    // editorInit(editor: monaco.editor.IStandaloneCodeEditor) {
+    //     // Do initialization tasks related to the editor
+    // }
     ngOnInit(): void {
         this.searchText = new FormControl('');
         this.dataInitializer();
@@ -64,14 +75,13 @@ export class DeviceCategoriesComponent implements OnInit {
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllDeviceList();
+        this.getFAQList();
     }
 
     /**
      * Method to get and set all data to data source     */
-    private getAllDeviceList(): void {
+    private getFAQList(): void {
         this.loader.showLoader();
-
         const params = {
             index: this.pageIndex + 1,
             size: this.pageSize,
@@ -84,11 +94,11 @@ export class DeviceCategoriesComponent implements OnInit {
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService.get(Apiurl.deviceCategoryList, params).subscribe(
+        this.baseService.get(Apiurl.faqsList, params).subscribe(
             (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.deviceCategory;
+                    this.dataSource.data = response.data.FAQs;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -107,7 +117,7 @@ export class DeviceCategoriesComponent implements OnInit {
                 this.paginator.length = 0;
                 if (this.pageIndex !== 0) {
                     this.pageIndex = 0;
-                    this.getAllDeviceList();
+                    this.getFAQList();
                 }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
@@ -120,9 +130,11 @@ export class DeviceCategoriesComponent implements OnInit {
     private initColumns(): void {
         this.columns = [
             'id',
-            'DeviceCategoryName',
-            'DeviceCategoryThumb',
-            'WarrantyYear',
+            'Title',
+            'Name',
+            'PositiveFeedbackCount',
+            'NegativeFeedbackCount',
+            // 'Thumb',
             'action',
         ];
     }
@@ -130,25 +142,26 @@ export class DeviceCategoriesComponent implements OnInit {
     /*---------------------------------
 Public methods
 -----------------------------------*/
-    getAllStaticDevice() {
-        this.baseService.get(Apiurl.staticDevices).subscribe((res: any) => {
-            if (res) this.deviceList = res.data.deviceCategories;
+    /**
+     * language data  set to select option drop down list
+     */
+    getStaticData() {
+        this.baseService.get(Apiurl.languages).subscribe((res: any) => {
+            if (res) this.languageList = res.data.languages;
+        });
+        this.baseService.get(Apiurl.faqCategory).subscribe((res: any) => {
+            if (res) this.categoryList = res.data.FAQCategories;
         });
     }
     /**
      * define form
      */
     defineForm() {
-        this.categoryform = this.fb.group({
-            DeviceCategoryName: [
-                '',
-                [Validators.required, Validators.pattern(/^\S.*$/)],
-            ],
-            WarrantyYear: [
-                '',
-                [Validators.required, Validators.max(99), Validators.min(1)],
-            ],
-            parentId: [0],
+        this.faqForm = this.fb.group({
+            Title: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+            LanguageId: ['', [Validators.required]],
+            CategoryId: ['', [Validators.required]],
+            Content: [''],
         });
     }
 
@@ -157,17 +170,15 @@ Public methods
      *method for open dialog box
      */
     openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
-        this.getAllStaticDevice();
         this.id = null;
-        this.selectedFile = null;
-        this.imageFile = null;
         this.defineForm();
+        this.getStaticData();
         this.isEdit = isEdit;
         this.submitted = false;
         this.dialog.open(templateRef, {
             disableClose: true,
-            width: '45%',
-            height: '55%',
+            width: '34%',
+            height: '75%',
         });
         if (this.isEdit) {
             this.setFormValue(data);
@@ -177,13 +188,12 @@ Public methods
      * update time set the form value to form control
      */
     setFormValue(data: any) {
+        console.log('data: ', data);
         this.id = data.id;
-        this.categoryform.controls.DeviceCategoryName.setValue(
-            data.DeviceCategoryName
-        );
-        this.categoryform.controls.WarrantyYear.setValue(data.WarrantyYear);
-        this.categoryform.controls.parentId.setValue(data.ParentId);
-        this.imageFile = data.DeviceCategoryThumb;
+        this.faqForm.controls.Title.setValue(data.Title);
+        this.faqForm.controls.LanguageId.setValue(data.LanguageId);
+        this.faqForm.controls.CategoryId.setValue(data.CategoryId);
+        this.faqForm.controls.Content.setValue(data.Content);
     }
     /**
      * input method for search the data
@@ -208,7 +218,7 @@ Public methods
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getAllDeviceList();
+        this.getFAQList();
     }
     /**
      * Method for sorting data
@@ -216,7 +226,7 @@ Public methods
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllDeviceList();
+        this.getFAQList();
     }
     /**
      * method for save form
@@ -224,47 +234,54 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
-        if (!this.categoryform.valid) {
+        if (!this.faqForm.valid) {
             return;
         }
-        if (
-            !this.categoryform.valid ||
-            (!this.isEdit && this.selectedFile == null)
-        ) {
-            return this.toastService.showToastMessage(
-                'Please fill out the form correctly',
-                'error-style'
-            );
+        if (this.isEdit) {
+            this.baseService
+                .put(Apiurl.faqsList + this.id, this.faqForm.value)
+                .subscribe(
+                    (res: any) => {
+                        if (res) {
+                            this.toastService.showToastMessage(
+                                res.message,
+                                'success-style'
+                            );
+                            this.dialog.closeAll();
+                            this.getFAQList();
+                        }
+                    },
+                    (error) => {
+                        // Handle errors
+                        this.toastService.showToastMessage(
+                            error,
+                            'error-style'
+                        );
+                    }
+                );
+        } else if (!this.isEdit) {
+            this.baseService
+                .post(Apiurl.faqsList, this.faqForm.value)
+                .subscribe(
+                    (res: any) => {
+                        if (res) {
+                            this.toastService.showToastMessage(
+                                res.message,
+                                'success-style'
+                            );
+                            this.dialog.closeAll();
+                            this.getFAQList();
+                        }
+                    },
+                    (error) => {
+                        // Handle errors
+                        this.toastService.showToastMessage(
+                            error,
+                            'error-style'
+                        );
+                    }
+                );
         }
-        const formData = new FormData();
-        const formValues = {
-            ParentId: this.categoryform.value.parentId,
-            DeviceCategoryName: this.categoryform.value.DeviceCategoryName,
-            WarrantyYear: this.categoryform.value.WarrantyYear,
-            file: this.selectedFile,
-        };
-        Object.entries(formValues).forEach(([key, value]) => {
-            formData.append(key, value);
-        });
-        const APIURL = this.isEdit
-            ? Apiurl.deviceCategoryList + this.id
-            : Apiurl.deviceCategoryList;
-        this.baseService.post(APIURL, formData).subscribe(
-            (res: any) => {
-                if (res) {
-                    this.toastService.showToastMessage(
-                        res.message,
-                        'success-style'
-                    );
-                    this.dialog.closeAll();
-                    this.getAllDeviceList();
-                }
-            },
-            (error) => {
-                // Handle errors
-                this.toastService.showToastMessage(error, 'error-style');
-            }
-        );
     }
     /**
      * method for delete selected record
@@ -272,76 +289,46 @@ Public methods
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Device Categories',
-                message:
-                    'Are you sure you want to delete this device category?',
+                title: 'FAQs ',
+                message: 'Are you sure you want to delete this FAQ?',
             },
             width: '30%',
         });
         confirmation.afterClosed().subscribe((dialogResult) => {
             if (dialogResult === true) {
                 // this.spinnerService.show();
-                this.baseService
-                    .delete(Apiurl.deviceCategoryList + id)
-                    .subscribe(
-                        (response: any) => {
-                            if (response) {
-                                // this.spinnerService.show();
-                                this.toastService.showToastMessage(
-                                    response.message,
-                                    'success-style'
-                                );
-                                this.getAllDeviceList();
-                            } else {
-                                this.toastService.showToastMessage(
-                                    response.message,
-                                    'error-style'
-                                );
-                            }
-                        },
-                        (error) => {
-                            // Handle errors
+                this.baseService.delete(Apiurl.faqsList + id).subscribe(
+                    (response: any) => {
+                        if (response) {
+                            // this.spinnerService.show();
                             this.toastService.showToastMessage(
-                                error,
+                                response.message,
+                                'success-style'
+                            );
+                            this.getFAQList();
+                        } else {
+                            this.toastService.showToastMessage(
+                                response.message,
                                 'error-style'
                             );
                         }
-                    );
+                    },
+                    (error) => {
+                        // Handle errors
+                        this.toastService.showToastMessage(
+                            error,
+                            'error-style'
+                        );
+                    }
+                );
             }
         });
-    }
-    imageFile;
-    /**
-     * method for set the selected file
-     * @param event
-     */
-    onFileSelected(event) {
-        const reader = new FileReader();
-        const file = event.target.files[0];
-        if (
-            file.type === 'image/jpeg' ||
-            file.type === 'image/png' ||
-            file.type === 'image/jpg'
-        ) {
-            if (file) reader.readAsDataURL(file); // read file as data url
-            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-            reader.onload = () => {
-                // called once readAsDataURL is completed
-                this.imageFile = reader.result;
-            };
-            this.selectedFile = file;
-        } else {
-            this.toastService.showToastMessage(
-                'Please select Image Extention .jpg .Jpeg .png format',
-                'error-style'
-            );
-        }
     }
     /***
      * method for accept only numbers
      */
     keyPress(event: KeyboardEvent): void {
-        const disallowedKeys = ['e', 'E', '+', '-','.'];
+        const disallowedKeys = ['e', 'E', '+', '-', '.'];
         if (disallowedKeys.includes(event.key)) {
             event.preventDefault();
         }

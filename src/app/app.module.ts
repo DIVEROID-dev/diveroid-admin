@@ -12,8 +12,9 @@ import { mockApiServices } from 'app/mock-api';
 import { LayoutModule } from 'app/layout/layout.module';
 import { AppComponent } from 'app/app.component';
 import { appRoutes } from 'app/app.routing';
-import { MasterModule } from './modules/admin/master/master.module';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { MONACO_PATH, MonacoEditorModule } from '@materia-ui/ngx-monaco-editor';
+
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy       : PreloadAllModules,
@@ -42,11 +43,18 @@ const routerConfig: ExtraOptions = {
 
         // 3rd party modules that require global configuration via forRoot
         MarkdownModule.forRoot({}),
-        MasterModule,
+        MonacoEditorModule,
         NgxSpinnerModule
     ],
     bootstrap   : [
         AppComponent
+    ],
+    providers: [
+        {
+            provide: MONACO_PATH,
+            useValue: 'https://unpkg.com/monaco-editor@0.31.1/min/vs',
+        },
+        
     ],
 })
 export class AppModule

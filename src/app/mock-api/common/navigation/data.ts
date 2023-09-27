@@ -250,4 +250,34 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
+    {
+        id: 'faq',
+        title: 'FAQ',
+        type: 'collapsable',
+        icon: 'heroicons_solid:question-mark-circle',
+        link: 'faq',
+        children: [
+            {
+                id: 'faq/faq-categories',
+                title: 'FAQ Categories',
+                type: 'basic',
+                icon: 'mat_outline:list_alt',
+                link: 'faq/faq-categories',
+            },
+            {
+                id: 'faq/faqs',
+                title: 'FAQs ',
+                type: 'basic',
+                icon: 'mat_outline:question_answer',
+                link: 'faq/faqs',
+            },
+            {
+                id: 'faq/faqs-feedbacks',
+                title: 'FAQs Feedbacks',
+                type: 'basic',
+                icon: 'mat_outline:feedback',
+                link: 'faq/faqs-feedbacks',
+            },
+        ],
+    },
 ];

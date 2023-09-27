@@ -58,7 +58,7 @@ export const Apiurl = {
     //black listed tokens api
     blackListedTokenList: 'admin/member/blacklistToken/',
 
-   /**
+    /**
      * device module
      */
     //device category list
@@ -70,7 +70,6 @@ export const Apiurl = {
     //member devices list
     memberDevicesList: 'admin/memberDevice/',
 
-    
     /**
      * my info module
      */
@@ -86,7 +85,7 @@ export const Apiurl = {
 
     //activity medals api
     activityMedalsList: 'admin/activityMedal/',
-    
+
     /**
      * device setting module
      */
@@ -101,6 +100,19 @@ export const Apiurl = {
 
     //water depth api
     waterDepthList: 'admin/waterDepth/',
+
+    /**
+     * faq module api
+     */
+    //faq categories api
+    faqCategoriesList: 'admin/faqCategory/',
+
+    //faqs api
+    faqsList: 'admin/faqs/',
+
+    //FAQs feedback api
+    faqsFeedbackList: 'admin/faqfeedback/',
+
     /**
      * static api
      */
@@ -112,4 +124,6 @@ export const Apiurl = {
     divingModes: 'mypage/myinfo/listDivingMode',
     //  organization list
     organizations: 'admin/organization/list',
+    // faq category
+    faqCategory: 'admin/faqCategory/list',
 };

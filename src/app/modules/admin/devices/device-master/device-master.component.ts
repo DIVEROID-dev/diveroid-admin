@@ -43,16 +43,27 @@ export class DeviceMasterComponent implements OnInit {
     imageProfile;
     selectedValue: string;
     deviceList: any[];
+    // searchDropDown: any;
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
         public dialog: MatDialog,
         private fb: FormBuilder,
         private loader: LoaderService,
+        private router: Router
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
             .subscribe(() => this.getAllDeviceList());
+        // if (this.router.getCurrentNavigation()?.extras?.state) {
+        //     this.searchDropDown =
+        //         this.router.getCurrentNavigation()?.extras?.state?.parameter;
+        //     console.log('this.searchDropDown: ', this.searchDropDown);
+        //     this.sortDirection =
+        //         this.searchDropDown == 'IsPaired' ? 'asc' : 'desc';
+        //     this.sortColumn = 'IsPaired';
+        //     this.getAllDeviceList();
+        // }
     }
 
     ngOnInit(): void {
@@ -162,11 +173,11 @@ Public methods
      *method for open dialog box
      */
     openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
-        this.getAllStaticDevice();
         this.id = null;
         this.selectedFile = null;
         this.imageProfile = null;
         this.defineForm();
+        this.getAllStaticDevice();
         this.isEdit = isEdit;
         this.submitted = false;
         this.dialog.open(templateRef, {

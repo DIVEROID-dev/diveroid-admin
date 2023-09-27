@@ -160,22 +160,22 @@
                     <div class="flex-1">
                         <mat-label>Upload Image<span class="required-field"> *</span></mat-label>
                         <div class="row flex flex-auto items-end mt-5 justify-left">
-                            <div
-                                class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container  border border-gray-300">
-                                <div class="absolute inset-0  z-10">
-                                </div>
+                            <div class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 
+                                ring-bg-card image-container border border-gray-300 upload-image">
+                                
                                 <div class="absolute inset-0 flex items-center justify-center z-20">
+                                    <label
+                                            class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
+                                            for="avatar-file-input" matRipple>
                                     <div>
                                         <input type="file" class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
                                             [multiple]="false" accept=".jpg,.jpeg,.png" (change)="onFileSelected($event)"
                                             id="avatar-file-input" [hidden]="true" #profileFileInput />
-                                        <label
-                                            class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
-                                            for="avatar-file-input" matRipple>
-                                            <mat-icon class="text-white upload-icon"
+                                        
+                                            <mat-icon class="text-[#666] upload-icon hover:text-white"
                                                 [svgIcon]="'mat_outline:file_upload'"></mat-icon>
+                                            </div>
                                         </label>
-                                    </div>
                                 </div>
                                 <img class="object-cover w-full h-full"
                                     [src]="imageFile" [ngClass]="imageFile==undefined ? 'hidden' :''">

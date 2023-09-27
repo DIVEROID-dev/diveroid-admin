@@ -14,6 +14,7 @@ import { CommonDeleteModalComponent } from './common-delete-modal/common-delete-
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
+import { MonacoEditorModule } from '@materia-ui/ngx-monaco-editor';
 
 @NgModule({
     imports: [
@@ -31,7 +32,9 @@ import { MatSelectModule } from '@angular/material/select';
         MatFormFieldModule,
         MatDialogModule,
         MatSlideToggleModule,
-        MatSelectModule
+        MatSelectModule,
+        MonacoEditorModule,
+
     ],
     exports: [
         CommonModule,
@@ -48,7 +51,9 @@ import { MatSelectModule } from '@angular/material/select';
         MatFormFieldModule,
         MatDialogModule,
         MatSlideToggleModule,
-        MatSelectModule
+        MatSelectModule,
+        MonacoEditorModule,
+
     ],
     declarations: [CommonDeleteModalComponent],
 })

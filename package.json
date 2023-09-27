@@ -34,6 +34,7 @@
         "@fullcalendar/moment": "4.4.2",
         "@fullcalendar/rrule": "4.4.2",
         "@fullcalendar/timegrid": "4.4.2",
+        "@materia-ui/ngx-monaco-editor": "^6.0.0",
         "@ngneat/transloco": "2.22.0",
         "apexcharts": "3.28.1",
         "crypto-js": "3.3.0",

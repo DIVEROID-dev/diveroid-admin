@@ -130,63 +130,64 @@
 
                     </div>
                 </div>
-                <div class="flex">
+                <div class="flex justify-start">
                     <div class="flex-1">
                         <mat-label>Upload Active Image<span class="required-field"> *</span></mat-label>
-                        <div class="row flex flex-auto items-end mt-5 justify-left">
-                            <div
-                            class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container border border-gray-300 ">
-                            <div class="absolute inset-0  z-10">
-                            </div>
-                            <div class="absolute inset-0 flex items-center justify-center z-20">
-                                <div>
-                                        <input type="file"
-                                            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
-                                            [multiple]="false" accept=".jpg,.jpeg,.png"
-                                            (change)="onActiveFileSelected($event)" id="avatar-file-input"
-                                            [hidden]="true" #fileUpload1 />
-                                        <label
-                                            class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
-                                            for="avatar-file-input" matRipple>
-                                            <mat-icon  class="text-white upload-icon"
+                        <div class="row flex flex-auto items-end mt-5 justify-start">
+                            <div class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 
+                            ring-bg-card image-container border border-gray-300 upload-image">
+
+                                <div class="absolute inset-0 flex items-center justify-center z-20">
+                                    <label class="flex items-center justify-center rounded-full bg-[#666] cursor-pointer 
+                                    hover:bg-hover" for="avatar-file-input" matRipple>
+                                        <div>
+                                            <input type="file"
+                                                class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                                                [multiple]="false" accept=".jpg,.jpeg,.png"
+                                                (change)="onActiveFileSelected($event)" id="avatar-file-input"
+                                                [hidden]="true" #fileUpload1 />
+
+                                            <mat-icon class="text-[#666] upload-icon hover:text-white"
                                                 svgIcon="mat_outline:file_upload"></mat-icon>
-                                        </label>
-                                    </div>
+                                        </div>
+                                    </label>
                                 </div>
-                                <img class="object-cover w-full h-full"
-                                    [src]="activeImage" [ngClass]="activeImage==undefined ? 'hidden' :''">
+                                <img class="object-cover w-full h-full" [src]="activeImage"
+                                    [ngClass]="activeImage==undefined ? 'hidden' :''">
                             </div>
                         </div>
                     </div>
                     <div class="contents">
-                        <div class="flex-1">
-                            <mat-label>Upload In Active Image<span class="required-field"> *</span></mat-label>
-                            <div class="row flex flex-auto items-end mt-5 justify-left">
-                                <div
-                                    class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card image-container border border-gray-300">
-                                    <div class="absolute inset-0  z-10">
-                                    </div>
-                                    <div class="absolute inset-0 flex items-center justify-center z-20">
+                    <div class="flex-1">
+                        <mat-label>Upload In Active Image<span class="required-field"> *</span></mat-label>
+                        <div class="row flex flex-auto items-end mt-5 justify-left">
+                            <div
+                                class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 
+                                ring-bg-card image-container border border-gray-300 upload-image">
+                                <div class="absolute inset-0  z-10">
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center z-20">
+                                    <label class="flex items-center justify-center rounded-full bg-[#666] cursor-pointer 
+                                    hover:bg-hover"
+                                        for="avatar-file-input1" matRipple>
                                         <div>
                                             <input type="file"
                                                 class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
                                                 [multiple]="false" accept=".jpg,.jpeg,.png"
                                                 (change)="onInActiveFileSelected($event)" id="avatar-file-input1"
                                                 [hidden]="true" #fileUpload2 />
-                                            <label
-                                            class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
-                                                for="avatar-file-input1" matRipple>
-                                                <mat-icon  class="text-white upload-icon"
+
+                                            <mat-icon class="text-[#666] upload-icon hover:text-white"
                                                 svgIcon="mat_outline:file_upload"></mat-icon>
-                                            </label>
                                         </div>
-                                    </div>
-                                    <img class="object-cover w-full h-full"
-                                        [src]="inActiveImage" [ngClass]="inActiveImage==undefined ? 'hidden' :''">
+                                    </label>
                                 </div>
+                                <img class="object-cover w-full h-full" [src]="inActiveImage"
+                                    [ngClass]="inActiveImage==undefined ? 'hidden' :''">
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
 
 

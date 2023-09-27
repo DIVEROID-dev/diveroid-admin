@@ -136,6 +136,13 @@ export const appRoutes: Route[] = [
                         './modules/admin/device-setting/device-setting.module'
                     ).then((m) => m.DeviceSettingModule),
             },
+            {
+                path: 'faq',
+                loadChildren: () =>
+                    import('./modules/admin/faq/faq.module').then(
+                        (m) => m.FaqModule
+                    ),
+            },
             // 404 & Catch all
             {
                 path: '404-not-found',

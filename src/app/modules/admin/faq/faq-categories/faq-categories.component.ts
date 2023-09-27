@@ -17,11 +17,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-device-categories',
-    templateUrl: './device-categories.component.html',
-    styleUrls: ['./device-categories.component.scss'],
+    selector: 'app-faq-categories',
+    templateUrl: './faq-categories.component.html',
+    styleUrls: ['./faq-categories.component.scss'],
 })
-export class DeviceCategoriesComponent implements OnInit {
+export class FaqCategoriesComponent implements OnInit {
     @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
     @ViewChild('filter', { static: false }) filter: any;
     dataSource: MatTableDataSource<any> = new MatTableDataSource();
@@ -36,11 +36,11 @@ export class DeviceCategoriesComponent implements OnInit {
     searchUpdater = new Subject<string>();
     isEdit: boolean = false;
     id: any;
-    categoryform: FormGroup;
+    faqCategoryForm: FormGroup;
     submitted = false;
+    languageList: any = [];
     selectedFile: any = [];
-    selectedValue: string;
-    deviceList: any[];
+    imageFile;
     constructor(
         private baseService: BaseService,
         private toastService: ToastService,
@@ -50,7 +50,7 @@ export class DeviceCategoriesComponent implements OnInit {
     ) {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(() => this.getAllDeviceList());
+            .subscribe(() => this.getFAQCategoryList());
     }
 
     ngOnInit(): void {
@@ -64,14 +64,13 @@ export class DeviceCategoriesComponent implements OnInit {
      */
     private dataInitializer(): void {
         this.initColumns();
-        this.getAllDeviceList();
+        this.getFAQCategoryList();
     }
 
     /**
      * Method to get and set all data to data source     */
-    private getAllDeviceList(): void {
+    private getFAQCategoryList(): void {
         this.loader.showLoader();
-
         const params = {
             index: this.pageIndex + 1,
             size: this.pageSize,
@@ -84,11 +83,11 @@ export class DeviceCategoriesComponent implements OnInit {
             params['sortOption'] = this.sortColumn;
         }
 
-        this.baseService.get(Apiurl.deviceCategoryList, params).subscribe(
+        this.baseService.get(Apiurl.faqCategoriesList, params).subscribe(
             (response: any) => {
                 this.loader.hideLoader();
                 if (response) {
-                    this.dataSource.data = response.data.deviceCategory;
+                    this.dataSource.data = response.data.FAQCategories;
                     this.totalRows = response.data.totalRecords;
                     setTimeout(() => {
                         this.paginator.pageIndex = this.pageIndex;
@@ -107,7 +106,7 @@ export class DeviceCategoriesComponent implements OnInit {
                 this.paginator.length = 0;
                 if (this.pageIndex !== 0) {
                     this.pageIndex = 0;
-                    this.getAllDeviceList();
+                    this.getFAQCategoryList();
                 }
                 // this.toastService.showToastMessage(error, 'error-style');
             }
@@ -118,37 +117,27 @@ export class DeviceCategoriesComponent implements OnInit {
      * Method to initialize Columns field
      */
     private initColumns(): void {
-        this.columns = [
-            'id',
-            'DeviceCategoryName',
-            'DeviceCategoryThumb',
-            'WarrantyYear',
-            'action',
-        ];
+        this.columns = ['id', 'Name', 'Thumb', 'Language', 'action'];
     }
 
     /*---------------------------------
 Public methods
 -----------------------------------*/
-    getAllStaticDevice() {
-        this.baseService.get(Apiurl.staticDevices).subscribe((res: any) => {
-            if (res) this.deviceList = res.data.deviceCategories;
+    /**
+     * language data  set to select option drop down list
+     */
+    getStaticData() {
+        this.baseService.get(Apiurl.languages).subscribe((res: any) => {
+            if (res) this.languageList = res.data.languages;
         });
     }
     /**
      * define form
      */
     defineForm() {
-        this.categoryform = this.fb.group({
-            DeviceCategoryName: [
-                '',
-                [Validators.required, Validators.pattern(/^\S.*$/)],
-            ],
-            WarrantyYear: [
-                '',
-                [Validators.required, Validators.max(99), Validators.min(1)],
-            ],
-            parentId: [0],
+        this.faqCategoryForm = this.fb.group({
+            Name: ['', [Validators.required, Validators.pattern(/^\S.*$/)]],
+            LanguageId: ['', [Validators.required]],
         });
     }
 
@@ -157,17 +146,17 @@ Public methods
      *method for open dialog box
      */
     openDialog(templateRef: TemplateRef<any>, isEdit: boolean, data?: any) {
-        this.getAllStaticDevice();
         this.id = null;
-        this.selectedFile = null;
         this.imageFile = null;
+        this.selectedFile = null;
         this.defineForm();
+        this.getStaticData();
         this.isEdit = isEdit;
         this.submitted = false;
         this.dialog.open(templateRef, {
             disableClose: true,
-            width: '45%',
-            height: '55%',
+            width: '30%',
+            height: '42%',
         });
         if (this.isEdit) {
             this.setFormValue(data);
@@ -178,12 +167,9 @@ Public methods
      */
     setFormValue(data: any) {
         this.id = data.id;
-        this.categoryform.controls.DeviceCategoryName.setValue(
-            data.DeviceCategoryName
-        );
-        this.categoryform.controls.WarrantyYear.setValue(data.WarrantyYear);
-        this.categoryform.controls.parentId.setValue(data.ParentId);
-        this.imageFile = data.DeviceCategoryThumb;
+        this.faqCategoryForm.controls.Name.setValue(data.Name);
+        this.faqCategoryForm.controls.LanguageId.setValue(data.LanguageId);
+        this.imageFile = data.Thumb;
     }
     /**
      * input method for search the data
@@ -208,7 +194,7 @@ Public methods
     pageChanged(event: PageEvent): void {
         this.pageSize = event.pageSize;
         this.pageIndex = event.pageIndex;
-        this.getAllDeviceList();
+        this.getFAQCategoryList();
     }
     /**
      * Method for sorting data
@@ -216,7 +202,7 @@ Public methods
     sortChange(e): void {
         this.sortColumn = e.active;
         this.sortDirection = e.direction;
-        this.getAllDeviceList();
+        this.getFAQCategoryList();
     }
     /**
      * method for save form
@@ -224,11 +210,11 @@ Public methods
      */
     saveForm() {
         this.submitted = true;
-        if (!this.categoryform.valid) {
+        if (!this.faqCategoryForm.valid) {
             return;
         }
         if (
-            !this.categoryform.valid ||
+            !this.faqCategoryForm.valid ||
             (!this.isEdit && this.selectedFile == null)
         ) {
             return this.toastService.showToastMessage(
@@ -238,17 +224,16 @@ Public methods
         }
         const formData = new FormData();
         const formValues = {
-            ParentId: this.categoryform.value.parentId,
-            DeviceCategoryName: this.categoryform.value.DeviceCategoryName,
-            WarrantyYear: this.categoryform.value.WarrantyYear,
+            Name: this.faqCategoryForm.value.Name,
+            LanguageId: this.faqCategoryForm.value.LanguageId,
             file: this.selectedFile,
         };
         Object.entries(formValues).forEach(([key, value]) => {
             formData.append(key, value);
         });
         const APIURL = this.isEdit
-            ? Apiurl.deviceCategoryList + this.id
-            : Apiurl.deviceCategoryList;
+            ? Apiurl.faqCategoriesList + this.id
+            : Apiurl.faqCategoriesList;
         this.baseService.post(APIURL, formData).subscribe(
             (res: any) => {
                 if (res) {
@@ -257,7 +242,7 @@ Public methods
                         'success-style'
                     );
                     this.dialog.closeAll();
-                    this.getAllDeviceList();
+                    this.getFAQCategoryList();
                 }
             },
             (error) => {
@@ -272,9 +257,8 @@ Public methods
     deleteRecord(id: number) {
         const confirmation = this.dialog.open(CommonDeleteModalComponent, {
             data: {
-                title: 'Device Categories',
-                message:
-                    'Are you sure you want to delete this device category?',
+                title: 'FAQ Categories',
+                message: 'Are you sure you want to delete this FAQ category?',
             },
             width: '30%',
         });
@@ -282,7 +266,7 @@ Public methods
             if (dialogResult === true) {
                 // this.spinnerService.show();
                 this.baseService
-                    .delete(Apiurl.deviceCategoryList + id)
+                    .delete(Apiurl.faqCategoriesList + id)
                     .subscribe(
                         (response: any) => {
                             if (response) {
@@ -291,7 +275,7 @@ Public methods
                                     response.message,
                                     'success-style'
                                 );
-                                this.getAllDeviceList();
+                                this.getFAQCategoryList();
                             } else {
                                 this.toastService.showToastMessage(
                                     response.message,
@@ -310,7 +294,6 @@ Public methods
             }
         });
     }
-    imageFile;
     /**
      * method for set the selected file
      * @param event
@@ -335,15 +318,6 @@ Public methods
                 'Please select Image Extention .jpg .Jpeg .png format',
                 'error-style'
             );
-        }
-    }
-    /***
-     * method for accept only numbers
-     */
-    keyPress(event: KeyboardEvent): void {
-        const disallowedKeys = ['e', 'E', '+', '-','.'];
-        if (disallowedKeys.includes(event.key)) {
-            event.preventDefault();
         }
     }
 }
