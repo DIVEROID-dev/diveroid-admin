@@ -30,7 +30,6 @@ export class FuseHorizontalNavigationBasicItemComponent implements OnInit, OnDes
         private _fuseUtilsService: FuseUtilsService
     )
     {
-        console.log("basic component horizontal");
         // Set the equivalent of {exact: false} as default for active match options.
         // We are not assigning the item.isActiveMatchOptions directly to the
         // [routerLinkActiveOptions] because if it's "undefined" initially, the router

@@ -188,7 +188,6 @@ Public methods
      * update time set the form value to form control
      */
     setFormValue(data: any) {
-        console.log('data: ', data);
         this.id = data.id;
         this.faqForm.controls.Title.setValue(data.Title);
         this.faqForm.controls.LanguageId.setValue(data.LanguageId);
