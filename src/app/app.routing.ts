@@ -143,6 +143,20 @@ export const appRoutes: Route[] = [
                         (m) => m.FaqModule
                     ),
             },
+            {
+                path: 'notice',
+                loadChildren: () =>
+                    import('./modules/admin/notice/notice.module').then(
+                        (m) => m.NoticeModule
+                    ),
+            },
+            {
+                path: 'third-party-cameras',
+                loadChildren: () =>
+                    import(
+                        './modules/admin/third-party-cameras/third-party-cameras.module'
+                    ).then((m) => m.ThirdPartyCamerasModule),
+            },
             // 404 & Catch all
             {
                 path: '404-not-found',

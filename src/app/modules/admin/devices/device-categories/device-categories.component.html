@@ -132,7 +132,7 @@
                         <mat-form-field appearance="outline" style="flex: 1; margin-right: 10px;">
                             <mat-label>Warranty Year<span class="required-field"> *</span></mat-label>
                             <input type="number" matInput formControlName="WarrantyYear"
-                                placeholder="Enter Warranty Year" [maxlength]="2" (keypress)="keyPress($event)">
+                                placeholder="Enter Warranty Year" [maxlength]="2" [min]="1" [step]="1" (keypress)="keyPress($event)">
                             <mat-error *ngIf="categoryform.controls['WarrantyYear'].hasError('required')">
                                 Please enter warranty year
                             </mat-error>

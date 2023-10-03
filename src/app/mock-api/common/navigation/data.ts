@@ -280,4 +280,34 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
+    {
+        id: 'notice',
+        title: 'Notice',
+        type: 'basic',
+        icon: 'mat_outline:gavel',
+        link: 'notice',
+    },
+    {
+        id: 'third-party-cameras',
+        title: 'Third Party Cameras',
+        type: 'collapsable',
+        icon: 'mat_outline:linked_camera',
+        link: 'third-party-cameras',
+        children: [
+            {
+                id: 'third-party-cameras/cameras',
+                title: 'Third party cameras',
+                type: 'basic',
+                icon: 'mat_outline:photo_camera',
+                link: 'third-party-cameras/cameras',
+            },
+            {
+                id: 'third-party-cameras/registration',
+                title: 'Third party cameras Registrations',
+                type: 'basic',
+                icon: 'mat_outline:camera_enhance',
+                link: 'third-party-cameras/registration',
+            },
+        ],
+    },
 ];

@@ -113,6 +113,21 @@ export const Apiurl = {
     //FAQs feedback api
     faqsFeedbackList: 'admin/faqfeedback/',
 
+     /**
+     * notice module api
+     */
+     noticeList: 'admin/notice/',
+
+         /**
+     *third party cameras module
+     */
+
+    //third party camera api
+    thirdPartyCameraList: 'admin/thirdpartycamera/',
+
+    //third party camera registration api
+    cameraRegistrationList: 'admin/thirdpartycameraregistration/',
+    
     /**
      * static api
      */
