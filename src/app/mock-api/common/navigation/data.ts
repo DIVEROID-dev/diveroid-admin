@@ -310,4 +310,41 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
         ],
     },
+    {
+        id: 'delete-accounts',
+        title: 'Delete Accounts',
+        type: 'collapsable',
+        icon: 'heroicons_outline:trash',
+        link: 'delete-accounts',
+        children: [
+            {
+                id: 'delete-accounts/reasons',
+                title: 'Delete Account Reasons',
+                type: 'basic',
+                icon: 'mat_outline:delete_sweep',
+                link: 'delete-accounts/reasons',
+            },
+            {
+                id: 'delete-accounts/account',
+                title: 'Delete Account',
+                type: 'basic',
+                icon: 'feather:alert-octagon',
+                link: 'delete-accounts/account',
+            },
+        ],
+    },
+    {
+        id: 'app-info',
+        title: 'App Info',
+        type: 'basic',
+        icon: 'mat_outline:settings_applications',
+        link: 'app-info',
+    },
+    {
+        id: 'products',
+        title: 'Products',
+        type: 'basic',
+        icon: 'feather:shopping-bag',
+        link: 'products',
+    },
 ];

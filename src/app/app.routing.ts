@@ -157,6 +157,18 @@ export const appRoutes: Route[] = [
                         './modules/admin/third-party-cameras/third-party-cameras.module'
                     ).then((m) => m.ThirdPartyCamerasModule),
             },
+            {
+                path:'delete-accounts',
+                loadChildren:()=>import('./modules/admin/delete-accounts/delete-accounts.module').then(m=>m.DeleteAccountsModule)
+            },
+            {
+                path:'app-info',
+                loadChildren:()=>import('./modules/admin/app-info/app-info.module').then(m=>m.AppInfoModule)
+            },
+            {
+                path:'products',
+                loadChildren:()=>import('./modules/admin/products/products.module').then(m=>m.ProductsModule)
+            },
             // 404 & Catch all
             {
                 path: '404-not-found',

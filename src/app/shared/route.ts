@@ -128,6 +128,26 @@ export const Apiurl = {
     //third party camera registration api
     cameraRegistrationList: 'admin/thirdpartycameraregistration/',
     
+     /**
+     * delete accounts module api
+     *
+     */
+    //delete account reasons api
+    deleteAcountReasonsList: 'admin/deleteAccountReason/',
+
+    //delete account
+    deleteAccountList: 'admin/deleteAccount/',
+
+    /**
+     * app info module
+     */
+    appInfoList: 'admin/appInfo/',
+
+    /**
+     * product module api
+     */
+    productList: 'admin/product/',
+    
     /**
      * static api
      */
