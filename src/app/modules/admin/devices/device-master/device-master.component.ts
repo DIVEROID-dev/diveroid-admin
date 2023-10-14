@@ -55,15 +55,6 @@ export class DeviceMasterComponent implements OnInit {
         this.searchUpdater
             .pipe(debounceTime(1000), distinctUntilChanged())
             .subscribe(() => this.getAllDeviceList());
-        // if (this.router.getCurrentNavigation()?.extras?.state) {
-        //     this.searchDropDown =
-        //         this.router.getCurrentNavigation()?.extras?.state?.parameter;
-        //     console.log('this.searchDropDown: ', this.searchDropDown);
-        //     this.sortDirection =
-        //         this.searchDropDown == 'IsPaired' ? 'asc' : 'desc';
-        //     this.sortColumn = 'IsPaired';
-        //     this.getAllDeviceList();
-        // }
     }
 
     ngOnInit(): void {

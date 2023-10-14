@@ -113,12 +113,12 @@ export const Apiurl = {
     //FAQs feedback api
     faqsFeedbackList: 'admin/faqfeedback/',
 
-     /**
+    /**
      * notice module api
      */
-     noticeList: 'admin/notice/',
+    noticeList: 'admin/notice/',
 
-         /**
+    /**
      *third party cameras module
      */
 
@@ -127,8 +127,8 @@ export const Apiurl = {
 
     //third party camera registration api
     cameraRegistrationList: 'admin/thirdpartycameraregistration/',
-    
-     /**
+
+    /**
      * delete accounts module api
      *
      */
@@ -147,7 +147,53 @@ export const Apiurl = {
      * product module api
      */
     productList: 'admin/product/',
-    
+
+    /**
+     * suggestions module api
+     */
+    //suggestion type list api
+    suggestionTypeList: 'admin/suggestionType/',
+
+    //suggestion list api
+    suggestionsList: 'admin/suggestion/',
+
+    /**
+     * store module
+     */
+
+    //subscription with pricing
+    subscriptionPricing: 'admin/subscriptionPricing/',
+
+    //subscription store features
+    subscriptionStoreFeatures: 'admin/subscriptionStoreFeatures/',
+
+    //feature pricing list
+    featurePricingList: 'admin/featurePricing/',
+
+    //member subscription list
+    memberSubscriptionList: 'admin/store/memberSubscription/',
+
+    //member featured list
+    memberFeaturedList: 'admin/store/memberFeatured/',
+
+    //payments list
+    paymentList: 'admin/store/payment/',
+
+    //refund subscription list
+    refundSubscriptionList: 'admin/refundSubscription/',
+
+    //cancel subscription list
+    cancelSubscriptionList: 'admin/cancelSubscription/',
+
+    //cancel subscription reason list
+    cancelSubscriptionReasonList: 'admin/cancelSubscriptionReason/',
+
+    //store distributor list
+    storeDistributerList: 'admin/storeDistributer/',
+
+    //gift card list
+    giftCardList: 'admin/giftcard/',
+
     /**
      * static api
      */
@@ -161,4 +207,12 @@ export const Apiurl = {
     organizations: 'admin/organization/list',
     // faq category
     faqCategory: 'admin/faqCategory/list',
+    //subscription list
+    subscription: 'admin/subscriptionPricing/list',
+    //feature list
+    featureList: 'admin/subscriptionStoreFeatures/list',
+    //cancel reason list
+    cancelReason: 'admin/cancelSubscriptionReason/list',
+    //store distributor list
+    storeDistributer: 'admin/storeDistributer/',
 };

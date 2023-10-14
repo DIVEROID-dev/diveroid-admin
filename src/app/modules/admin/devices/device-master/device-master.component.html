@@ -18,18 +18,6 @@
                     (input)="onSerach($event)">
             </mat-form-field>
         </div>
-        <!-- <div>
-            <mat-form-field>
-                <mat-select placeholder="Select Filter" [(ngModel)]="searchDropDown">
-                    <mat-option value="IsPaired">
-                        paired
-                    </mat-option>
-                    <mat-option value="Un-Paired">
-                        un-paired
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div> -->
         <div class="mt-4 sm:mt-0">
             <button mat-flat-button color="primary" (click)="openDialog(categorymodal,false)" matTooltip="Add Device">
                 <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
@@ -126,8 +114,8 @@
             </ng-container>
 
             <ng-container *matNoDataRow>
-                <tr class="text-center " aria-colspan="5">
-                    <td colspan="5" class="p-6 text-3xl font-semibold">
+                <tr class="text-center " aria-colspan="8">
+                    <td colspan="8" class="p-6 text-3xl font-semibold">
                         No data
                         found
                     </td>

@@ -169,6 +169,14 @@ export const appRoutes: Route[] = [
                 path:'products',
                 loadChildren:()=>import('./modules/admin/products/products.module').then(m=>m.ProductsModule)
             },
+            {
+                path:'suggestions',
+                loadChildren:()=>import('./modules/admin/suggestions/suggestions.module').then(m=>m.SuggestionsModule)
+            },
+            {
+                path:'store',
+                loadChildren:()=>import('./modules/admin/store/store.module').then(m=>m.StoreModule)
+            },
             // 404 & Catch all
             {
                 path: '404-not-found',
