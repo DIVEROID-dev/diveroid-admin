@@ -107,7 +107,7 @@ export class MemberFeaturedComponent implements OnInit {
   private initColumns(): void {
       this.columns = [
           'id',
-          'memberName',
+          'Name',
           'FeatureName',
           'MobileDetails',
           'PriceCurrency',

@@ -107,7 +107,7 @@ export class MemberSubscriptionComponent implements OnInit {
   private initColumns(): void {
       this.columns = [
           'id',
-          'memberName',
+          'Name',
           'MobileDetails',
           'PriceCurrency',
           'status',
